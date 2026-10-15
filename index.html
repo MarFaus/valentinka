@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рукодельная Валентинка для Лапочки 💖</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Comfortaa:wght@700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        craft: '#f6f0ea',
+                        craftDark: '#e3d6c7',
+                        rosePink: '#ffb3c1',
+                        softRed: '#ff4d6d',
+                        deepRed: '#c9184a',
+                        feltRed: '#e63946',
+                        creamPaper: '#fffcf7'
+                    },
+                    fontFamily: {
+                        handwriting: ['Caveat', 'cursive'],
+                        cute: ['Comfortaa', 'cursive'],
+                        sans: ['Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f6f0ea;
+            background-image: 
+                radial-gradient(#e3d6c7 1.5px, transparent 1.5px), 
+                radial-gradient(#e3d6c7 1.5px, #f6f0ea 1.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Paper textures & shadow effects */
+        .paper-card {
+            background: #fffcf7;
+            box-shadow: 0 10px 30px -5px rgba(139, 90, 75, 0.15), 0 4px 10px -2px rgba(139, 90, 75, 0.1);
+            position: relative;
+        }
+
+        .paper-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 2px dashed #f1a7b4;
+            margin: 6px;
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        /* Washi tape decor */
+        .washi-tape {
+            background: rgba(255, 179, 193, 0.7);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            backdrop-filter: blur(1px);
+        }
+
+        /* Felt heart stitch line */
+        .felt-heart {
+            filter: drop-shadow(0 12px 18px rgba(201, 24, 74, 0.25));
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .felt-heart:hover {
+            transform: scale(1.06) rotate(-2deg);
+        }
+
+        .felt-heart:active {
+            transform: scale(0.92) rotate(2deg);
+        }
+
+        /* Floating particles canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Envelope flap fold logic */
+        .envelope-flap {
+            clip-path: polygon(0 0, 50% 55%, 100% 0);
+        }
+
+        /* Animations */
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 77, 109, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 77, 109, 0.8)); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes hugWobble {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.08) rotate(-4deg); }
+            50% { transform: scale(1.12) rotate(4deg); }
+            75% { transform: scale(1.08) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .hug-anim {
+            animation: hugWobble 0.9s ease-in-out;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-90px) scale(1.3) rotate(15deg); }
+        }
+
+        .floating-heart-num {
+            position: absolute;
+            font-family: 'Comfortaa', cursive;
+            font-weight: bold;
+            color: #ff4d6d;
+            pointer-events: none;
+            animation: floatUp 0.9s ease-out forwards;
+            z-index: 50;
+        }
+
+        /* Custom Scrollbar for Compliment Jar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f6f0ea;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffb3c1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans relative">
+
+    <!-- Background Canvas for Hearts & Sparkles -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- TOP CONTROL BAR -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 sm:gap-3">
+        <!-- Sound/Music Toggle -->
+        <button id="musicBtn" onclick="toggleMusicBox()" class="bg-white/90 hover:bg-white text-rose-600 px-3 py-2 rounded-full shadow-md backdrop-blur border border-pink-200 flex items-center gap-2 transition text-xs sm:text-sm font-bold">
+            <span id="musicIcon">🎵</span>
+            <span id="musicText">Музыка: Вкл</span>
+        </button>
+        <!-- Reset Button -->
+        <button onclick="resetValentine()" class="bg-white/90 hover:bg-white text-gray-600 p-2 sm:px-3 sm:py-2 rounded-full shadow-md backdrop-blur border border-gray-200 transition text-xs sm:text-sm font-bold" title="Сначала">
+            🔄 <span class="hidden sm:inline">Заново</span>
+        </button>
+    </div>
+
+    <!-- MAIN INTERACTIVE CONTAINER -->
+    <div class="w-full max-w-xl relative z-20">
+
+        <!-- ================= PHASE 0: ENVELOPE ================= -->
+        <div id="envelopePhase" class="flex flex-col items-center justify-center transition-all duration-700">
+            <!-- Envelope Wrapper -->
+            <div onclick="openEnvelope()" class="cursor-pointer group relative w-72 sm:w-96 h-52 sm:h-64 bg-amber-100 rounded-2xl shadow-2xl border-4 border-amber-200/80 flex flex-col items-center justify-center p-4 transition-all duration-300 transform group-hover:scale-105 group-hover:rotate-1">
+                
+                <!-- Washi Tapes -->
+                <div class="washi-tape absolute -top-3 left-8 w-20 h-6 -rotate-6 rounded-sm opacity-80"></div>
+                <div class="washi-tape absolute -bottom-3 right-8 w-24 h-6 -rotate-3 rounded-sm opacity-80"></div>
+
+                <!-- Envelope Back Fold lines styling -->
+                <div class="absolute inset-0 bg-amber-200/40 rounded-2xl pointer-events-none" style="clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);"></div>
+                <div class="envelope-flap absolute inset-0 bg-amber-300/60 rounded-2xl pointer-events-none"></div>
+
+                <!-- Heart Wax Seal -->
+                <div class="z-10 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-600 to-deepRed rounded-full shadow-lg flex items-center justify-center border-4 border-red-400 group-hover:scale-110 transition-transform duration-300 pulse-glow">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 fill-white drop-shadow-sm" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+
+                <div class="z-10 mt-4 text-center">
+                    <p class="font-handwriting text-2xl sm:text-3xl text-amber-900 font-bold tracking-wide">Тебе особое послание...✨</p>
+                    <p class="font-cute text-xs text-amber-700/80 mt-1">Нажми на сургучную печать, чтобы открыть</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PHASE 1: HEART CLICKER ================= -->
+        <div id="clickerPhase" class="hidden flex-col items-center justify-center transition-all duration-700">
+            <div class="paper-card rounded-3xl p-6 sm:p-8 w-full text-center relative overflow-hidden">
+                <!-- Washi tape corner -->
+                <div class="washi-tape absolute -top-2 left-1/2 -translate-x-1/2 w-32 h-7 rotate-1 rounded-sm"></div>
+
+                <h2 class="font-cute text-2xl sm:text-3xl text-deepRed font-bold mt-2">Наполни сердечко любовью! 💖</h2>
+                <p class="font-sans text-sm text-gray-600 mt-1">Кликай по сердечку, чтобы зарядить валентинку!</p>
+
+                <!-- Progress Bar Container -->
+                <div class="w-full bg-rose-100 h-6 rounded-full mt-5 p-1 border-2 border-pink-200 relative overflow-hidden shadow-inner">
+                    <div id="progressBar" class="bg-gradient-to-r from-rosePink via-softRed to-deepRed h-full rounded-full transition-all duration-300 w-0 flex items-center justify-end pr-2 text-[10px] text-white font-bold">
+                    </div>
+                </div>
+                <div class="flex justify-between text-xs text-rose-500 font-bold mt-1 px-1">
+                    <span>Кликов: <span id="clickCount">0</span>/10</span>
+                    <span id="clickHint">Жми сильнее! 💕</span>
+                </div>
+
+                <!-- Interactive Heart Button -->
+                <div class="my-8 relative flex justify-center items-center">
+                    <button id="heartBtn" onclick="clickHeart(event)" class="felt-heart cursor-pointer focus:outline-none relative group">
+                        <!-- Felt Plush Heart SVG -->
+                        <svg class="w-40 h-40 sm:w-48 sm:h-48 drop-shadow-2xl transition-all duration-150" viewBox="0 0 100 100">
+                            <!-- Main Felt Body -->
+                            <path d="M50,88 C50,88 12,62 12,35 C12,20 23,12 35,12 C42,12 47,16 50,21 C53,16 58,12 65,12 C77,12 88,20 88,35 C88,62 50,88 50,88 Z" fill="#ff4d6d" />
+                            <!-- Inner Felt Highlight Layer -->
+                            <path d="M50,83 C50,83 16,58 16,35 C16,23 25,16 35,16 C41,16 46,19 50,24 C54,19 59,16 65,16 C75,16 84,23 84,35 C84,58 50,83 50,83 Z" fill="#ff758f" opacity="0.4" />
+                            <!-- White Stitching line -->
+                            <path d="M50,85 C50,85 14,60 14,35 C14,21 24,14 35,14 C41,14 46,17 50,22 C54,17 59,14 65,14 C76,14 86,21 86,35 C86,60 50,85 50,85 Z" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" opacity="0.9" />
+                            <!-- Cute Sparkle Highlights -->
+                            <circle cx="30" cy="26" r="3" fill="#ffffff" opacity="0.8" />
+                            <circle cx="25" cy="34" r="1.8" fill="#ffffff" opacity="0.6" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center font-handwriting text-3xl sm:text-4xl text-white font-bold drop-shadow-md pointer-events-none">
+                            Жми!
+                        </div>
+                    </button>
+                </div>
+
+                <p id="clickMsg" class="font-handwriting text-2xl text-rose-600 h-8">
+                    Каждый клик приближает сюрприз...✨
+                </p>
+            </div>
+        </div>
+
+        <!-- ================= PHASE 2: REVEAL CARD & HUGGING CATS ================= -->
+        <div id="revealPhase" class="hidden flex-col items-center justify-center transition-all duration-1000">
+            <div class="paper-card rounded-3xl p-5 sm:p-8 w-full text-center relative">
+
+                <!-- Decorative Washi Tapes -->
+                <div class="washi-tape absolute -top-3 left-6 w-24 h-7 -rotate-6 rounded-sm"></div>
+                <div class="washi-tape absolute -top-3 right-6 w-24 h-7 rotate-6 rounded-sm"></div>
+
+                <!-- Stamp / Postmark badge -->
+                <div class="absolute top-4 right-4 sm:right-6 border-2 border-rose-300 rounded-lg p-1 text-[10px] text-rose-400 font-cute -rotate-12 pointer-events-none">
+                    LOVE MAIL 💌<br>SPECIAL DELIV.
+                </div>
+
+                <!-- HUGGING CATS SVG ARTWORK (Vector representation matching the image) -->
+                <div id="catsContainer" class="my-2 transition-transform cursor-pointer relative flex justify-center" onclick="triggerHugAnimation()" title="Нажми, чтобы котики обнялись!">
+                    <svg class="w-64 h-64 sm:w-80 sm:h-80 drop-shadow-md" viewBox="0 0 300 300">
+                        <defs>
+                            <!-- Cute Cheek Gradient -->
+                            <radialGradient id="cheekGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#ff9494" stop-opacity="0.7"/>
+                                <stop offset="100%" stop-color="#ff9494" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <!-- Floating Hearts above cats -->
+                        <g class="animate-bounce" style="animation-duration: 2s;">
+                            <!-- Big Heart -->
+                            <path d="M150 45 C150 45 130 25 115 35 C100 45 110 65 150 90 C190 65 200 45 185 35 C170 25 150 45 150 45 Z" fill="#ff3b4e" />
+                            <!-- Small Heart -->
+                            <path d="M195 30 C195 30 183 18 174 24 C165 30 171 42 195 58 C219 42 225 30 216 24 C207 18 195 30 195 30 Z" fill="#ff6b7a" />
+                        </g>
+
+                        <!-- HUGGING CATS GROUP -->
+                        <g id="catsSvgGroup" class="transition-transform duration-300 transform origin-bottom">
+                            
+                            <!-- ================= LEFT CAT (Chubby Grey Cat) ================= -->
+                            <g id="greyCat">
+                                <!-- Tail -->
+                                <path d="M 65 200 C 40 210 35 240 55 245 C 65 248 75 230 75 210 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round" />
+                                
+                                <!-- Feet -->
+                                <ellipse cx="95" cy="255" rx="14" ry="10" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
+                                <ellipse cx="125" cy="258" rx="14" ry="10" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
+
+                                <!-- Body -->
+                                <path d="M 70 160 C 50 180 55 240 90 250 C 120 255 145 240 155 210 C 150 180 140 165 110 155 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" />
+
+                                <!-- Head & Ears -->
+                                <!-- Left Ear -->
+                                <path d="M 65 125 L 45 80 L 95 100 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
+                                <path d="M 60 115 L 52 88 L 82 102 Z" fill="#ffb3c1" />
+                                <!-- Right Ear -->
+                                <path d="M 135 110 L 160 70 L 168 115 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
+                                <path d="M 140 108 L 156 78 L 162 110 Z" fill="#ffb3c1" />
+
+                                <!-- Main Head Shape -->
+                                <ellipse cx="108" cy="138" rx="62" ry="48" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" />
+
+                                <!-- Cheeks -->
+                                <ellipse cx="70" cy="148" rx="10" ry="6" fill="url(#cheekGlow)" />
+
+                                <!-- Eyes (^ ^ closed happy eyes) -->
+                                <path d="M 78 140 Q 86 130 94 140" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
+                                <path d="M 104 138 Q 112 128 120 138" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
+
+                                <!-- Open Happy Mouth -->
+                                <path d="M 98 144 Q 102 160 108 144 Z" fill="#ff4d6d" stroke="#4a352f" stroke-width="3" />
+                            </g>
+
+                            <!-- ================= RIGHT CAT (White/Cream Cat) ================= -->
+                            <g id="whiteCat">
+                                <!-- Tail -->
+                                <path d="M 235 200 C 260 210 268 240 248 248 C 235 250 225 230 225 210 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round" />
+
+                                <!-- Feet -->
+                                <ellipse cx="180" cy="258" rx="14" ry="10" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
+                                <ellipse cx="210" cy="255" rx="14" ry="10" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
+
+                                <!-- Body -->
+                                <path d="M 145 210 C 155 240 180 255 210 250 C 245 240 250 180 230 160 C 200 155 160 180 145 210 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" />
+
+                                <!-- Head & Ears -->
+                                <!-- Left Ear -->
+                                <path d="M 132 115 L 140 70 L 165 110 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
+                                <path d="M 138 110 L 144 78 L 160 108 Z" fill="#ffb3c1" />
+                                <!-- Right Ear -->
+                                <path d="M 205 100 L 255 80 L 235 125 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
+                                <path d="M 212 102 L 248 88 L 232 115 Z" fill="#ffb3c1" />
+
+                                <!-- Main Head Shape -->
+                                <ellipse cx="192" cy="138" rx="62" ry="48" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" />
+
+                                <!-- Cheeks -->
+                                <ellipse cx="230" cy="148" rx="10" ry="6" fill="url(#cheekGlow)" />
+
+                                <!-- Eyes (^ ^ closed happy eyes) -->
+                                <path d="M 180 138 Q 188 128 196 138" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
+                                <path d="M 206 140 Q 214 130 222 140" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
+
+                                <!-- Open Happy Mouth -->
+                                <path d="M 192 144 Q 196 160 202 144 Z" fill="#ff4d6d" stroke="#4a352f" stroke-width="3" />
+                            </g>
+
+                            <!-- ================= HUGGING PAWS / ARMS ================= -->
+                            <!-- Left cat arm around right cat -->
+                            <path d="M 120 180 C 145 175 170 185 185 195 C 188 202 178 208 170 202 C 150 192 130 190 115 190 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
+                            <!-- Right cat arm around left cat -->
+                            <path d="M 180 180 C 155 175 130 185 115 195 C 112 202 122 208 130 202 C 150 192 170 190 185 190 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
+
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- MAIN REVEAL BANNER -->
+                <div class="my-3">
+                    <h1 class="font-cute text-2xl sm:text-4xl text-deepRed font-extrabold tracking-wide drop-shadow-sm leading-tight">
+                        Я ТЕБЯ ОЧЕНЬ СИЛЬНО ЛЮБЛЮ, ЛАПОЧКА! 💖
+                    </h1>
+                </div>
+
+                <!-- Romantic Love Letter Text -->
+                <div class="bg-amber-50/70 border-2 border-dashed border-rose-200 rounded-2xl p-4 sm:p-5 my-4 text-left shadow-inner">
+                    <p class="font-handwriting text-2xl sm:text-3xl text-gray-800 leading-snug">
+                        Моя хорошая, ты делаешь каждый день теплее и ярче! ✨
+                    </p>
+                    <p class="font-handwriting text-2xl sm:text-3xl text-gray-800 leading-snug mt-2">
+                        Спасибо за твою улыбку, за твою нежность и за то, что ты есть. Ты — моё самое главное счастье и моё любимое солнышко! ☀️🐾
+                    </p>
+                    <div class="text-right mt-3 font-handwriting text-2xl sm:text-3xl font-bold text-deepRed">
+                        Твой котик ❤️
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+                    <!-- Hug Button -->
+                    <button onclick="triggerHugAnimation()" class="bg-gradient-to-r from-rosePink to-softRed hover:from-softRed hover:to-deepRed text-white font-cute font-bold py-3 px-4 rounded-2xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
+                        <span>🐾</span>
+                        <span>Обнять котиков</span>
+                    </button>
+
+                    <!-- Compliment Jar Button -->
+                    <button onclick="openComplimentJar()" class="bg-gradient-to-r from-amber-200 to-amber-300 hover:from-amber-300 hover:to-amber-400 text-amber-900 font-cute font-bold py-3 px-4 rounded-2xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
+                        <span>🍯</span>
+                        <span>Баночка комплиментов</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL: COMPLIMENT JAR ================= -->
+    <div id="complimentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="paper-card rounded-3xl p-6 max-w-md w-full text-center relative animate-bounce-in">
+            <!-- Tape -->
+            <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-6 rotate-2 rounded-sm"></div>
+
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-cute text-2xl text-amber-900 font-bold flex items-center gap-2">
+                    🍯 Баночка Комплиментов
+                </h3>
+                <button onclick="closeComplimentJar()" class="text-gray-400 hover:text-gray-600 font-bold text-xl px-2">✕</button>
+            </div>
+
+            <!-- Polaroid Note Frame -->
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 my-4 transform -rotate-1 transition-all duration-300" id="polaroidCard">
+                <div id="complimentText" class="font-handwriting text-3xl sm:text-4xl text-deepRed min-h-[100px] flex items-center justify-center p-2">
+                    «Загрузка самых теплых слов...»
+                </div>
+                <div class="text-right text-xs font-cute text-gray-400 mt-2">
+                    Для моей любимой ✨
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-5">
+                <button onclick="nextCompliment()" class="flex-1 bg-gradient-to-r from-softRed to-deepRed text-white font-cute font-bold py-2.5 rounded-xl shadow transition hover:opacity-95 active:scale-95">
+                    Достать ещё записку ✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // --- STATE & GLOBAL VARIABLES ---
+        let clickCount = 0;
+        const maxClicks = 10;
+        let isMusicPlaying = false;
+        let soundEngine = null;
+
+        // Compliments Array
+        const compliments = [
+            "Ты моё самое теплое и уютное солнышко ☀️",
+            "С твоей улыбкой любой день становится особенным 🌸",
+            "Ты самая милая, нежная и замечательная на свете! 🐾",
+            "Рядом с тобой моё сердце биется чаще 💖",
+            "Твои обнимашки — лучшее средство от любых невзгод 🧸",
+            "Обожаю твой смех и твои невероятные глаза ✨",
+            "Ты — моя любимая лапочка! 💕",
+            "Каждый момент с тобой — это маленькое счастье! 🍃"
+        ];
+        let complimentIdx = 0;
+
+        // --- WEB AUDIO SYNTHESIZER (No external audio files needed) ---
+        class WebAudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.musicInterval = null;
+                this.noteIdx = 0;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            // Pop Sound Effect for Clicks
+            playPop(freq = 440) {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 1.6, this.ctx.currentTime + 0.08);
+
+                    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.12);
+                } catch(e) {}
+            }
+
+            // Burst Sound Effect for Confetti / Big Heart
+            playBurst() {
+                try {
+                    this.init();
+                    const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+                    notes.forEach((freq, idx) => {
+                        setTimeout(() => this.playPop(freq), idx * 50);
+                    });
+                } catch(e) {}
+            }
+
+            // Lofi Music Box Synth Lullaby
+            toggleMusic(onUpdate) {
+                this.init();
+                if (isMusicPlaying) {
+                    isMusicPlaying = false;
+                    if (this.musicInterval) clearInterval(this.musicInterval);
+                    if (onUpdate) onUpdate(false);
+                } else {
+                    isMusicPlaying = true;
+                    if (onUpdate) onUpdate(true);
+
+                    // Gentle Lofi Melody Notes
+                    const melody = [
+                        261.63, 329.63, 392.00, 523.25, 392.00, 329.63,
+                        293.66, 349.23, 440.00, 523.25, 440.00, 349.23,
+                        261.63, 329.63, 392.00, 493.88, 392.00, 329.63,
+                        220.00, 261.63, 329.63, 440.00, 329.63, 261.63
+                    ];
+
+                    this.musicInterval = setInterval(() => {
+                        if (!isMusicPlaying) return;
+                        const note = melody[this.noteIdx % melody.length];
+                        this.noteIdx++;
+
+                        try {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(note * 1.5, this.ctx.currentTime);
+
+                            gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.2);
+
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+
+                            osc.start();
+                            osc.stop(this.ctx.currentTime + 1.2);
+                        } catch(e) {}
+                    }, 400);
+                }
+            }
+        }
+
+        soundEngine = new WebAudioEngine();
+
+        function toggleMusicBox() {
+            soundEngine.toggleMusic((playing) => {
+                document.getElementById('musicIcon').textContent = playing ? '🎵' : '🔇';
+                document.getElementById('musicText').textContent = playing ? 'Музыка: Вкл' : 'Музыка: Выкл';
+            });
+        }
+
+        // --- STEP TRANSITIONS ---
+        function openEnvelope() {
+            soundEngine.playBurst();
+            spawnParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 35);
+
+            document.getElementById('envelopePhase').classList.add('opacity-0', 'scale-90');
+            setTimeout(() => {
+                document.getElementById('envelopePhase').classList.add('hidden');
+                const clicker = document.getElementById('clickerPhase');
+                clicker.classList.remove('hidden');
+                clicker.classList.add('flex');
+            }, 500);
+        }
+
+        function clickHeart(event) {
+            clickCount++;
+            
+            // Sound & Physics
+            soundEngine.playPop(350 + clickCount * 30);
+            
+            // Floating +1 number
+            showFloatingText(event.clientX, event.clientY, `+1 Любовь! 💖`);
+            
+            // Particles
+            spawnParticleBurst(event.clientX, event.clientY, 8);
+
+            // Progress Bar Update
+            const pct = Math.min(100, (clickCount / maxClicks) * 100);
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${pct}%`;
+            document.getElementById('clickCount').textContent = clickCount;
+
+            const messages = [
+                "Ещё чуточку! 💕",
+                "Сердечко растёт! ✨",
+                "Почти получилось! 🌸",
+                "Много-много любви! 💖",
+                "Смотри, оно сейчас лопнет! 🎉"
+            ];
+            document.getElementById('clickMsg').textContent = messages[Math.floor((clickCount/maxClicks) * messages.length)] || "Ещё разок! ✨";
+
+            // Trigger Explosion on 10 clicks
+            if (clickCount >= maxClicks) {
+                setTimeout(triggerGrandReveal, 300);
+            }
+        }
+
+        function showFloatingText(x, y, text) {
+            const el = document.createElement('div');
+            el.className = 'floating-heart-num';
+            el.textContent = text;
+            el.style.left = `${x - 30}px`;
+            el.style.top = `${y - 20}px`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 900);
+        }
+
+        function triggerGrandReveal() {
+            soundEngine.playBurst();
+            
+            // Grand particle explosion
+            for(let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    spawnParticleBurst(
+                        Math.random() * window.innerWidth, 
+                        Math.random() * window.innerHeight * 0.7, 
+                        40
+                    );
+                }, i * 200);
+            }
+
+            document.getElementById('clickerPhase').classList.add('opacity-0', 'scale-90');
+            setTimeout(() => {
+                document.getElementById('clickerPhase').classList.add('hidden');
+                const reveal = document.getElementById('revealPhase');
+                reveal.classList.remove('hidden');
+                reveal.classList.add('flex');
+                
+                // Auto hug animation on reveal
+                triggerHugAnimation();
+            }, 600);
+        }
+
+        function triggerHugAnimation() {
+            soundEngine.playBurst();
+            const group = document.getElementById('catsSvgGroup');
+            group.classList.remove('hug-anim');
+            void group.offsetWidth; // trigger reflow
+            group.classList.add('hug-anim');
+
+            // Heart Rain
+            for(let i = 0; i < 25; i++) {
+                setTimeout(() => {
+                    spawnParticleBurst(
+                        Math.random() * window.innerWidth, 
+                        -20, 
+                        2, 
+                        true
+                    );
+                }, i * 80);
+            }
+        }
+
+        // --- COMPLIMENT JAR MODAL ---
+        function openComplimentJar() {
+            soundEngine.playPop(520);
+            document.getElementById('complimentModal').classList.remove('hidden');
+            nextCompliment();
+        }
+
+        function closeComplimentJar() {
+            soundEngine.playPop(300);
+            document.getElementById('complimentModal').classList.add('hidden');
+        }
+
+        function nextCompliment() {
+            soundEngine.playPop(600);
+            const card = document.getElementById('polaroidCard');
+            card.classList.add('scale-95', 'opacity-50');
+            
+            setTimeout(() => {
+                const text = compliments[complimentIdx % compliments.length];
+                complimentIdx++;
+                document.getElementById('complimentText').textContent = `«${text}»`;
+                card.classList.remove('scale-95', 'opacity-50');
+            }, 150);
+        }
+
+        function resetValentine() {
+            clickCount = 0;
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('clickCount').textContent = '0';
+            
+            document.getElementById('revealPhase').classList.add('hidden');
+            document.getElementById('clickerPhase').classList.add('hidden');
+            
+            const env = document.getElementById('envelopePhase');
+            env.classList.remove('hidden', 'opacity-0', 'scale-90');
+        }
+
+
+        // ================= CANVAS PARTICLE SYSTEM =================
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, isFalling = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || (isFalling ? -10 : Math.random() * canvas.height);
+                this.size = Math.random() * 12 + 8;
+                this.vx = (Math.random() - 0.5) * (isFalling ? 2 : 1.5);
+                this.vy = isFalling ? (Math.random() * 2 + 1.5) : (Math.random() - 0.5) * 1.5 - 0.5;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.01 + 0.005;
+                this.color = ['#ff4d6d', '#ff758f', '#ffb3c1', '#c9184a', '#ff85a1'][Math.floor(Math.random() * 5)];
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.05;
+                this.type = Math.random() > 0.3 ? 'heart' : 'sparkle';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotSpeed;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = this.color;
+
+                if (this.type === 'heart') {
+                    // Draw Heart Path
+                    ctx.beginPath();
+                    const topCurveHeight = this.size * 0.3;
+                    ctx.moveTo(0, topCurveHeight);
+                    ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                    ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                    ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    // Draw Sparkle
+                    ctx.beginPath();
+                    for (let i = 0; i < 4; i++) {
+                        ctx.lineTo(Math.cos((i * Math.PI) / 2) * this.size, Math.sin((i * Math.PI) / 2) * this.size);
+                        ctx.lineTo(Math.cos((i * Math.PI) / 2 + Math.PI / 4) * (this.size / 3), Math.sin((i * Math.PI) / 2 + Math.PI / 4) * (this.size / 3));
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        function spawnParticleBurst(x, y, count = 15, isFalling = false) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, isFalling));
+            }
+        }
+
+        // Persistent ambient floating background hearts
+        setInterval(() => {
+            if (particles.length < 45) {
+                particles.push(new Particle(Math.random() * canvas.width, canvas.height + 10, false));
+            }
+        }, 300);
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+
+                if (p.alpha <= 0 || p.y > canvas.height + 20) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = function() {
+            animateCanvas();
+        };
+    </script>
+</body>
+</html>
