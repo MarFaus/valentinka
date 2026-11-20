@@ -1,800 +1,231 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рукодельная Валентинка для Лапочки 💖</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Comfortaa:wght@700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        craft: '#f6f0ea',
-                        craftDark: '#e3d6c7',
-                        rosePink: '#ffb3c1',
-                        softRed: '#ff4d6d',
-                        deepRed: '#c9184a',
-                        feltRed: '#e63946',
-                        creamPaper: '#fffcf7'
-                    },
-                    fontFamily: {
-                        handwriting: ['Caveat', 'cursive'],
-                        cute: ['Comfortaa', 'cursive'],
-                        sans: ['Nunito', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            background-color: #f6f0ea;
-            background-image: 
-                radial-gradient(#e3d6c7 1.5px, transparent 1.5px), 
-                radial-gradient(#e3d6c7 1.5px, #f6f0ea 1.5px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-            overflow-x: hidden;
-            user-select: none;
-        }
-
-        /* Paper textures & shadow effects */
-        .paper-card {
-            background: #fffcf7;
-            box-shadow: 0 10px 30px -5px rgba(139, 90, 75, 0.15), 0 4px 10px -2px rgba(139, 90, 75, 0.1);
-            position: relative;
-        }
-
-        .paper-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border: 2px dashed #f1a7b4;
-            margin: 6px;
-            border-radius: inherit;
-            pointer-events: none;
-        }
-
-        /* Washi tape decor */
-        .washi-tape {
-            background: rgba(255, 179, 193, 0.7);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            backdrop-filter: blur(1px);
-        }
-
-        /* Felt heart stitch line */
-        .felt-heart {
-            filter: drop-shadow(0 12px 18px rgba(201, 24, 74, 0.25));
-            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .felt-heart:hover {
-            transform: scale(1.06) rotate(-2deg);
-        }
-
-        .felt-heart:active {
-            transform: scale(0.92) rotate(2deg);
-        }
-
-        /* Floating particles canvas */
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        /* Envelope flap fold logic */
-        .envelope-flap {
-            clip-path: polygon(0 0, 50% 55%, 100% 0);
-        }
-
-        /* Animations */
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 77, 109, 0.4)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 77, 109, 0.8)); }
-        }
-
-        .pulse-glow {
-            animation: pulseGlow 2s infinite ease-in-out;
-        }
-
-        @keyframes hugWobble {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.08) rotate(-4deg); }
-            50% { transform: scale(1.12) rotate(4deg); }
-            75% { transform: scale(1.08) rotate(-2deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .hug-anim {
-            animation: hugWobble 0.9s ease-in-out;
-        }
-
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(0.8) rotate(0deg); }
-            100% { opacity: 0; transform: translateY(-90px) scale(1.3) rotate(15deg); }
-        }
-
-        .floating-heart-num {
-            position: absolute;
-            font-family: 'Comfortaa', cursive;
-            font-weight: bold;
-            color: #ff4d6d;
-            pointer-events: none;
-            animation: floatUp 0.9s ease-out forwards;
-            z-index: 50;
-        }
-
-        /* Custom Scrollbar for Compliment Jar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f6f0ea;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #ffb3c1;
-            border-radius: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Хроники Любви Котиков</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f6f0ea;--dot:#e3d6c7;--paper:#fffcf7;--ink:#4a352f;--pink:#ffb3c1;--red:#ff4d6d;--deep:#c9184a;--soft:#ffe3e8;--gold:#ffb703;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#2a2022;--dot:#3a2d30;--paper:#3a2c30;--ink:#f6e6df;--soft:#4d3339;--deep:#ff8fa3}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#2a2022;--dot:#3a2d30;--paper:#3a2c30;--ink:#f6e6df;--soft:#4d3339;--deep:#ff8fa3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg) radial-gradient(var(--dot) 1.5px,transparent 1.5px) 0 0/26px 26px;color:var(--ink);font-family:Comfortaa,'Trebuchet MS',sans-serif;overflow-x:hidden;display:flex;align-items:center;justify-content:center;padding:14px}
+h2{font-size:1.45rem;color:var(--deep);margin:.4rem 0}
+p{margin:.3rem 0}
+.hand{font-family:Caveat,'Segoe Script',cursive;font-weight:700}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+#bar{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:8px;display:flex;gap:6px;z-index:60}
+#bar button{background:var(--paper);color:var(--ink);border:1px solid var(--pink);border-radius:99px;padding:8px 12px;font:700 .78rem Comfortaa,sans-serif;cursor:pointer;box-shadow:0 3px 10px #0002}
+main{width:100%;max-width:520px;position:relative;z-index:20}
+.scene{display:none}
+.scene.on{display:block;animation:in .6s ease}
+@keyframes in{from{opacity:0;transform:translateY(16px) scale(.96)}}
+.card{background:var(--paper);border-radius:26px;padding:22px 18px;text-align:center;position:relative;box-shadow:0 15px 35px -5px #8b5a4b30}
+.card:before{content:"";position:absolute;inset:6px;border:2px dashed var(--pink);border-radius:21px;pointer-events:none}
+.tape{position:absolute;top:-10px;left:50%;width:110px;height:24px;margin-left:-55px;background:#ffb3c1bf;transform:rotate(-3deg);border-radius:3px}
+.tag{display:inline-block;background:var(--soft);color:var(--deep);border-radius:99px;padding:3px 12px;font-size:.72rem;margin-bottom:6px}
+.btn{background:linear-gradient(90deg,#ff8fa3,var(--red));color:#fff;border:0;border-radius:16px;padding:11px 16px;font:700 .85rem Comfortaa,sans-serif;cursor:pointer;margin:4px;box-shadow:0 5px 14px #ff4d6d55}
+.btn:active{transform:scale(.95)}
+.btn.g{background:linear-gradient(90deg,#ffd166,var(--gold));color:#4a2f00;box-shadow:0 5px 14px #ffb70355}
+.btn.s{background:var(--soft);color:var(--deep);box-shadow:none}
+/* envelope */
+#env{position:relative;width:min(320px,86vw);height:220px;margin:auto;background:#f3d9a8;border-radius:16px;border:4px solid #e6c180;box-shadow:0 18px 40px #0003;perspective:700px}
+#env .body{position:absolute;inset:0;border-radius:12px;background:linear-gradient(160deg,#f7e2b8,#ecc98a)}
+#flap{position:absolute;left:0;right:0;top:0;height:60%;background:#e9c27f;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .9s ease,opacity .9s;z-index:3}
+#env.open #flap{transform:rotateX(180deg);opacity:0}
+#strip{position:absolute;left:-8px;right:-8px;top:46%;height:30px;background:#ffb3c1d9;z-index:6;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;transition:transform .7s,opacity .7s;clip-path:polygon(0 0,100% 0,98% 50%,100% 100%,0 100%,2% 50%)}
+#strip.torn{transform:translate(60px,-90px) rotate(40deg);opacity:0;pointer-events:none}
+#seal{position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff6b81,var(--deep));border:4px solid #ff8fa3;z-index:5;display:flex;align-items:center;justify-content:center;font-size:1.7rem;cursor:pointer;box-shadow:0 6px 12px #0004;animation:beat 1.4s infinite}
+@keyframes beat{50%{transform:scale(1.08)}}
+#seal.melt{animation:melt 1.2s forwards;pointer-events:none}
+@keyframes melt{40%{transform:scale(1.15,.9);filter:blur(1px)}100%{transform:translateY(70px) scale(1.5,.2);opacity:0;filter:blur(5px)}}
+/* clicker */
+.bar{height:24px;background:var(--soft);border:2px solid var(--pink);border-radius:99px;overflow:hidden;margin:12px 0 4px;padding:2px}
+#fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--pink),var(--red),var(--deep));transition:width .15s}
+#heart{background:none;border:0;cursor:pointer;margin:14px 0;filter:drop-shadow(0 12px 18px #c9184a50)}
+#combo{display:inline-block;background:var(--gold);color:#4a2f00;border-radius:99px;padding:3px 12px;font-size:.8rem;min-height:22px;transition:transform .15s}
+.pop{position:fixed;font-weight:700;color:var(--red);pointer-events:none;z-index:70;animation:fl .8s forwards;text-shadow:0 2px 4px #0003}
+@keyframes fl{to{transform:translateY(-70px) scale(1.3);opacity:0}}
+/* game */
+#field{position:relative;height:300px;border-radius:18px;border:2px dashed var(--pink);background:var(--soft);overflow:hidden;touch-action:none;margin-top:8px}
+#field.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.it{position:absolute;left:0;top:0;font-size:1.7rem;pointer-events:none;will-change:transform}
+#pc{position:absolute;bottom:4px;left:0;width:60px;height:60px;pointer-events:none;will-change:transform}
+#over{position:absolute;inset:0;background:#000a;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:5}
+.ctl{display:flex;gap:8px}.ctl .btn{flex:1;margin:8px 0 0;touch-action:none;user-select:none}
+/* polaroid */
+.pol{background:#fff;color:#4a352f;padding:12px 12px 10px;border-radius:10px;box-shadow:0 8px 20px #0002;transform:rotate(-2deg);max-width:290px;margin:12px auto;transition:transform .3s}
+.pol .pic{background:#ffe3e8;border-radius:8px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;font-size:2.2rem}
+.pol .t{font-size:1.65rem;line-height:1.1;color:var(--deep);outline:0}
+.pol .d{font-size:.7rem;color:#8a7a74;margin-top:8px;outline:0}
+[contenteditable=true]{background:#fff6c9;border-radius:6px;padding:2px 4px}
+#jar{width:92px;height:110px;margin:6px auto;border:3px solid #9ad1d4;border-radius:14px 14px 26px 26px;background:#d9f2f355;position:relative;cursor:pointer;display:flex;flex-wrap:wrap;align-content:flex-end;justify-content:center;gap:3px;padding:8px 4px}
+#jar:before{content:"";position:absolute;top:-12px;left:12px;right:12px;height:12px;background:#c9184a;border-radius:6px 6px 0 0}
+#jar i{width:20px;height:20px;transform:rotate(var(--r));border-radius:3px}
+#note{background:#fff;color:#4a352f;border-radius:12px;padding:12px;margin:10px auto;max-width:300px;font-size:1.5rem;line-height:1.1;box-shadow:0 6px 16px #0002;display:none;animation:in .5s}
+/* finale */
+#cats{width:min(320px,88vw);cursor:pointer;overflow:visible}
+#cats .c1,#cats .c2{transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+#cats.hug .c1{transform:translate(10px,4px) rotate(4deg)}#cats.hug .c2{transform:translate(-10px,4px) rotate(-4deg)}
+#cats.purr{animation:pr .12s infinite}
+@keyframes pr{50%{transform:translateY(-2px)}}
+.fh{animation:fy 2.2s ease-in-out infinite}.fh:nth-of-type(2){animation-delay:.9s}
+@keyframes fy{50%{transform:translateY(-10px)}}
+#cert{border:3px double var(--gold);border-radius:16px;padding:14px;margin:14px 0;background:linear-gradient(135deg,#fff9e6,#ffeef1);color:#4a352f}
+#cert h3{margin:0;font-size:1rem;letter-spacing:.12em;color:#9a6b00}
+#letter{font-size:1.6rem;line-height:1.1;text-align:left;margin:8px 0;outline:0}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:#222;color:#fff;border-radius:99px;padding:9px 16px;font-size:.8rem;z-index:80;opacity:0;transition:opacity .3s;pointer-events:none}
+</style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-3 sm:p-6 font-sans relative">
-
-    <!-- Background Canvas for Hearts & Sparkles -->
-    <canvas id="bgCanvas"></canvas>
-
-    <!-- TOP CONTROL BAR -->
-    <div class="fixed top-4 right-4 z-50 flex items-center gap-2 sm:gap-3">
-        <!-- Sound/Music Toggle -->
-        <button id="musicBtn" onclick="toggleMusicBox()" class="bg-white/90 hover:bg-white text-rose-600 px-3 py-2 rounded-full shadow-md backdrop-blur border border-pink-200 flex items-center gap-2 transition text-xs sm:text-sm font-bold">
-            <span id="musicIcon">🎵</span>
-            <span id="musicText">Музыка: Вкл</span>
-        </button>
-        <!-- Reset Button -->
-        <button onclick="resetValentine()" class="bg-white/90 hover:bg-white text-gray-600 p-2 sm:px-3 sm:py-2 rounded-full shadow-md backdrop-blur border border-gray-200 transition text-xs sm:text-sm font-bold" title="Сначала">
-            🔄 <span class="hidden sm:inline">Заново</span>
-        </button>
-    </div>
-
-    <!-- MAIN INTERACTIVE CONTAINER -->
-    <div class="w-full max-w-xl relative z-20">
-
-        <!-- ================= PHASE 0: ENVELOPE ================= -->
-        <div id="envelopePhase" class="flex flex-col items-center justify-center transition-all duration-700">
-            <!-- Envelope Wrapper -->
-            <div onclick="openEnvelope()" class="cursor-pointer group relative w-72 sm:w-96 h-52 sm:h-64 bg-amber-100 rounded-2xl shadow-2xl border-4 border-amber-200/80 flex flex-col items-center justify-center p-4 transition-all duration-300 transform group-hover:scale-105 group-hover:rotate-1">
-                
-                <!-- Washi Tapes -->
-                <div class="washi-tape absolute -top-3 left-8 w-20 h-6 -rotate-6 rounded-sm opacity-80"></div>
-                <div class="washi-tape absolute -bottom-3 right-8 w-24 h-6 -rotate-3 rounded-sm opacity-80"></div>
-
-                <!-- Envelope Back Fold lines styling -->
-                <div class="absolute inset-0 bg-amber-200/40 rounded-2xl pointer-events-none" style="clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);"></div>
-                <div class="envelope-flap absolute inset-0 bg-amber-300/60 rounded-2xl pointer-events-none"></div>
-
-                <!-- Heart Wax Seal -->
-                <div class="z-10 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-red-600 to-deepRed rounded-full shadow-lg flex items-center justify-center border-4 border-red-400 group-hover:scale-110 transition-transform duration-300 pulse-glow">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 fill-white drop-shadow-sm" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-
-                <div class="z-10 mt-4 text-center">
-                    <p class="font-handwriting text-2xl sm:text-3xl text-amber-900 font-bold tracking-wide">Тебе особое послание...✨</p>
-                    <p class="font-cute text-xs text-amber-700/80 mt-1">Нажми на сургучную печать, чтобы открыть</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= PHASE 1: HEART CLICKER ================= -->
-        <div id="clickerPhase" class="hidden flex-col items-center justify-center transition-all duration-700">
-            <div class="paper-card rounded-3xl p-6 sm:p-8 w-full text-center relative overflow-hidden">
-                <!-- Washi tape corner -->
-                <div class="washi-tape absolute -top-2 left-1/2 -translate-x-1/2 w-32 h-7 rotate-1 rounded-sm"></div>
-
-                <h2 class="font-cute text-2xl sm:text-3xl text-deepRed font-bold mt-2">Наполни сердечко любовью! 💖</h2>
-                <p class="font-sans text-sm text-gray-600 mt-1">Кликай по сердечку, чтобы зарядить валентинку!</p>
-
-                <!-- Progress Bar Container -->
-                <div class="w-full bg-rose-100 h-6 rounded-full mt-5 p-1 border-2 border-pink-200 relative overflow-hidden shadow-inner">
-                    <div id="progressBar" class="bg-gradient-to-r from-rosePink via-softRed to-deepRed h-full rounded-full transition-all duration-300 w-0 flex items-center justify-end pr-2 text-[10px] text-white font-bold">
-                    </div>
-                </div>
-                <div class="flex justify-between text-xs text-rose-500 font-bold mt-1 px-1">
-                    <span>Кликов: <span id="clickCount">0</span>/10</span>
-                    <span id="clickHint">Жми сильнее! 💕</span>
-                </div>
-
-                <!-- Interactive Heart Button -->
-                <div class="my-8 relative flex justify-center items-center">
-                    <button id="heartBtn" onclick="clickHeart(event)" class="felt-heart cursor-pointer focus:outline-none relative group">
-                        <!-- Felt Plush Heart SVG -->
-                        <svg class="w-40 h-40 sm:w-48 sm:h-48 drop-shadow-2xl transition-all duration-150" viewBox="0 0 100 100">
-                            <!-- Main Felt Body -->
-                            <path d="M50,88 C50,88 12,62 12,35 C12,20 23,12 35,12 C42,12 47,16 50,21 C53,16 58,12 65,12 C77,12 88,20 88,35 C88,62 50,88 50,88 Z" fill="#ff4d6d" />
-                            <!-- Inner Felt Highlight Layer -->
-                            <path d="M50,83 C50,83 16,58 16,35 C16,23 25,16 35,16 C41,16 46,19 50,24 C54,19 59,16 65,16 C75,16 84,23 84,35 C84,58 50,83 50,83 Z" fill="#ff758f" opacity="0.4" />
-                            <!-- White Stitching line -->
-                            <path d="M50,85 C50,85 14,60 14,35 C14,21 24,14 35,14 C41,14 46,17 50,22 C54,17 59,14 65,14 C76,14 86,21 86,35 C86,60 50,85 50,85 Z" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="4 3" opacity="0.9" />
-                            <!-- Cute Sparkle Highlights -->
-                            <circle cx="30" cy="26" r="3" fill="#ffffff" opacity="0.8" />
-                            <circle cx="25" cy="34" r="1.8" fill="#ffffff" opacity="0.6" />
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center font-handwriting text-3xl sm:text-4xl text-white font-bold drop-shadow-md pointer-events-none">
-                            Жми!
-                        </div>
-                    </button>
-                </div>
-
-                <p id="clickMsg" class="font-handwriting text-2xl text-rose-600 h-8">
-                    Каждый клик приближает сюрприз...✨
-                </p>
-            </div>
-        </div>
-
-        <!-- ================= PHASE 2: REVEAL CARD & HUGGING CATS ================= -->
-        <div id="revealPhase" class="hidden flex-col items-center justify-center transition-all duration-1000">
-            <div class="paper-card rounded-3xl p-5 sm:p-8 w-full text-center relative">
-
-                <!-- Decorative Washi Tapes -->
-                <div class="washi-tape absolute -top-3 left-6 w-24 h-7 -rotate-6 rounded-sm"></div>
-                <div class="washi-tape absolute -top-3 right-6 w-24 h-7 rotate-6 rounded-sm"></div>
-
-                <!-- Stamp / Postmark badge -->
-                <div class="absolute top-4 right-4 sm:right-6 border-2 border-rose-300 rounded-lg p-1 text-[10px] text-rose-400 font-cute -rotate-12 pointer-events-none">
-                    LOVE MAIL 💌<br>SPECIAL DELIV.
-                </div>
-
-                <!-- HUGGING CATS SVG ARTWORK (Vector representation matching the image) -->
-                <div id="catsContainer" class="my-2 transition-transform cursor-pointer relative flex justify-center" onclick="triggerHugAnimation()" title="Нажми, чтобы котики обнялись!">
-                    <svg class="w-64 h-64 sm:w-80 sm:h-80 drop-shadow-md" viewBox="0 0 300 300">
-                        <defs>
-                            <!-- Cute Cheek Gradient -->
-                            <radialGradient id="cheekGlow" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="#ff9494" stop-opacity="0.7"/>
-                                <stop offset="100%" stop-color="#ff9494" stop-opacity="0"/>
-                            </radialGradient>
-                        </defs>
-
-                        <!-- Floating Hearts above cats -->
-                        <g class="animate-bounce" style="animation-duration: 2s;">
-                            <!-- Big Heart -->
-                            <path d="M150 45 C150 45 130 25 115 35 C100 45 110 65 150 90 C190 65 200 45 185 35 C170 25 150 45 150 45 Z" fill="#ff3b4e" />
-                            <!-- Small Heart -->
-                            <path d="M195 30 C195 30 183 18 174 24 C165 30 171 42 195 58 C219 42 225 30 216 24 C207 18 195 30 195 30 Z" fill="#ff6b7a" />
-                        </g>
-
-                        <!-- HUGGING CATS GROUP -->
-                        <g id="catsSvgGroup" class="transition-transform duration-300 transform origin-bottom">
-                            
-                            <!-- ================= LEFT CAT (Chubby Grey Cat) ================= -->
-                            <g id="greyCat">
-                                <!-- Tail -->
-                                <path d="M 65 200 C 40 210 35 240 55 245 C 65 248 75 230 75 210 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round" />
-                                
-                                <!-- Feet -->
-                                <ellipse cx="95" cy="255" rx="14" ry="10" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
-                                <ellipse cx="125" cy="258" rx="14" ry="10" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
-
-                                <!-- Body -->
-                                <path d="M 70 160 C 50 180 55 240 90 250 C 120 255 145 240 155 210 C 150 180 140 165 110 155 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" />
-
-                                <!-- Head & Ears -->
-                                <!-- Left Ear -->
-                                <path d="M 65 125 L 45 80 L 95 100 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
-                                <path d="M 60 115 L 52 88 L 82 102 Z" fill="#ffb3c1" />
-                                <!-- Right Ear -->
-                                <path d="M 135 110 L 160 70 L 168 115 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
-                                <path d="M 140 108 L 156 78 L 162 110 Z" fill="#ffb3c1" />
-
-                                <!-- Main Head Shape -->
-                                <ellipse cx="108" cy="138" rx="62" ry="48" fill="#928e8e" stroke="#4a352f" stroke-width="4.5" />
-
-                                <!-- Cheeks -->
-                                <ellipse cx="70" cy="148" rx="10" ry="6" fill="url(#cheekGlow)" />
-
-                                <!-- Eyes (^ ^ closed happy eyes) -->
-                                <path d="M 78 140 Q 86 130 94 140" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
-                                <path d="M 104 138 Q 112 128 120 138" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
-
-                                <!-- Open Happy Mouth -->
-                                <path d="M 98 144 Q 102 160 108 144 Z" fill="#ff4d6d" stroke="#4a352f" stroke-width="3" />
-                            </g>
-
-                            <!-- ================= RIGHT CAT (White/Cream Cat) ================= -->
-                            <g id="whiteCat">
-                                <!-- Tail -->
-                                <path d="M 235 200 C 260 210 268 240 248 248 C 235 250 225 230 225 210 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round" />
-
-                                <!-- Feet -->
-                                <ellipse cx="180" cy="258" rx="14" ry="10" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
-                                <ellipse cx="210" cy="255" rx="14" ry="10" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
-
-                                <!-- Body -->
-                                <path d="M 145 210 C 155 240 180 255 210 250 C 245 240 250 180 230 160 C 200 155 160 180 145 210 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" />
-
-                                <!-- Head & Ears -->
-                                <!-- Left Ear -->
-                                <path d="M 132 115 L 140 70 L 165 110 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
-                                <path d="M 138 110 L 144 78 L 160 108 Z" fill="#ffb3c1" />
-                                <!-- Right Ear -->
-                                <path d="M 205 100 L 255 80 L 235 125 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" stroke-linejoin="round"/>
-                                <path d="M 212 102 L 248 88 L 232 115 Z" fill="#ffb3c1" />
-
-                                <!-- Main Head Shape -->
-                                <ellipse cx="192" cy="138" rx="62" ry="48" fill="#fff9f5" stroke="#4a352f" stroke-width="4.5" />
-
-                                <!-- Cheeks -->
-                                <ellipse cx="230" cy="148" rx="10" ry="6" fill="url(#cheekGlow)" />
-
-                                <!-- Eyes (^ ^ closed happy eyes) -->
-                                <path d="M 180 138 Q 188 128 196 138" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
-                                <path d="M 206 140 Q 214 130 222 140" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round" />
-
-                                <!-- Open Happy Mouth -->
-                                <path d="M 192 144 Q 196 160 202 144 Z" fill="#ff4d6d" stroke="#4a352f" stroke-width="3" />
-                            </g>
-
-                            <!-- ================= HUGGING PAWS / ARMS ================= -->
-                            <!-- Left cat arm around right cat -->
-                            <path d="M 120 180 C 145 175 170 185 185 195 C 188 202 178 208 170 202 C 150 192 130 190 115 190 Z" fill="#928e8e" stroke="#4a352f" stroke-width="4" />
-                            <!-- Right cat arm around left cat -->
-                            <path d="M 180 180 C 155 175 130 185 115 195 C 112 202 122 208 130 202 C 150 192 170 190 185 190 Z" fill="#fff9f5" stroke="#4a352f" stroke-width="4" />
-
-                        </g>
-                    </svg>
-                </div>
-
-                <!-- MAIN REVEAL BANNER -->
-                <div class="my-3">
-                    <h1 class="font-cute text-2xl sm:text-4xl text-deepRed font-extrabold tracking-wide drop-shadow-sm leading-tight">
-                        Я ТЕБЯ ОЧЕНЬ СИЛЬНО ЛЮБЛЮ, ЛАПОЧКА! 💖
-                    </h1>
-                </div>
-
-                <!-- Romantic Love Letter Text -->
-                <div class="bg-amber-50/70 border-2 border-dashed border-rose-200 rounded-2xl p-4 sm:p-5 my-4 text-left shadow-inner">
-                    <p class="font-handwriting text-2xl sm:text-3xl text-gray-800 leading-snug">
-                        Моя хорошая, ты делаешь каждый день теплее и ярче! ✨
-                    </p>
-                    <p class="font-handwriting text-2xl sm:text-3xl text-gray-800 leading-snug mt-2">
-                        Спасибо за твою улыбку, за твою нежность и за то, что ты есть. Ты — моё самое главное счастье и моё любимое солнышко! ☀️🐾
-                    </p>
-                    <div class="text-right mt-3 font-handwriting text-2xl sm:text-3xl font-bold text-deepRed">
-                        Твой котик ❤️
-                    </div>
-                </div>
-
-                <!-- ACTION BUTTONS -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-                    <!-- Hug Button -->
-                    <button onclick="triggerHugAnimation()" class="bg-gradient-to-r from-rosePink to-softRed hover:from-softRed hover:to-deepRed text-white font-cute font-bold py-3 px-4 rounded-2xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
-                        <span>🐾</span>
-                        <span>Обнять котиков</span>
-                    </button>
-
-                    <!-- Compliment Jar Button -->
-                    <button onclick="openComplimentJar()" class="bg-gradient-to-r from-amber-200 to-amber-300 hover:from-amber-300 hover:to-amber-400 text-amber-900 font-cute font-bold py-3 px-4 rounded-2xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
-                        <span>🍯</span>
-                        <span>Баночка комплиментов</span>
-                    </button>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ================= MODAL: COMPLIMENT JAR ================= -->
-    <div id="complimentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="paper-card rounded-3xl p-6 max-w-md w-full text-center relative animate-bounce-in">
-            <!-- Tape -->
-            <div class="washi-tape absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-6 rotate-2 rounded-sm"></div>
-
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-cute text-2xl text-amber-900 font-bold flex items-center gap-2">
-                    🍯 Баночка Комплиментов
-                </h3>
-                <button onclick="closeComplimentJar()" class="text-gray-400 hover:text-gray-600 font-bold text-xl px-2">✕</button>
-            </div>
-
-            <!-- Polaroid Note Frame -->
-            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 my-4 transform -rotate-1 transition-all duration-300" id="polaroidCard">
-                <div id="complimentText" class="font-handwriting text-3xl sm:text-4xl text-deepRed min-h-[100px] flex items-center justify-center p-2">
-                    «Загрузка самых теплых слов...»
-                </div>
-                <div class="text-right text-xs font-cute text-gray-400 mt-2">
-                    Для моей любимой ✨
-                </div>
-            </div>
-
-            <div class="flex gap-2 mt-5">
-                <button onclick="nextCompliment()" class="flex-1 bg-gradient-to-r from-softRed to-deepRed text-white font-cute font-bold py-2.5 rounded-xl shadow transition hover:opacity-95 active:scale-95">
-                    Достать ещё записку ✨
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ================= JAVASCRIPT LOGIC ================= -->
-    <script>
-        // --- STATE & GLOBAL VARIABLES ---
-        let clickCount = 0;
-        const maxClicks = 10;
-        let isMusicPlaying = false;
-        let soundEngine = null;
-
-        // Compliments Array
-        const compliments = [
-            "Ты моё самое теплое и уютное солнышко ☀️",
-            "С твоей улыбкой любой день становится особенным 🌸",
-            "Ты самая милая, нежная и замечательная на свете! 🐾",
-            "Рядом с тобой моё сердце биется чаще 💖",
-            "Твои обнимашки — лучшее средство от любых невзгод 🧸",
-            "Обожаю твой смех и твои невероятные глаза ✨",
-            "Ты — моя любимая лапочка! 💕",
-            "Каждый момент с тобой — это маленькое счастье! 🍃"
-        ];
-        let complimentIdx = 0;
-
-        // --- WEB AUDIO SYNTHESIZER (No external audio files needed) ---
-        class WebAudioEngine {
-            constructor() {
-                this.ctx = null;
-                this.musicInterval = null;
-                this.noteIdx = 0;
-            }
-
-            init() {
-                if (!this.ctx) {
-                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
-            }
-
-            // Pop Sound Effect for Clicks
-            playPop(freq = 440) {
-                try {
-                    this.init();
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(freq * 1.6, this.ctx.currentTime + 0.08);
-
-                    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
-
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + 0.12);
-                } catch(e) {}
-            }
-
-            // Burst Sound Effect for Confetti / Big Heart
-            playBurst() {
-                try {
-                    this.init();
-                    const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
-                    notes.forEach((freq, idx) => {
-                        setTimeout(() => this.playPop(freq), idx * 50);
-                    });
-                } catch(e) {}
-            }
-
-            // Lofi Music Box Synth Lullaby
-            toggleMusic(onUpdate) {
-                this.init();
-                if (isMusicPlaying) {
-                    isMusicPlaying = false;
-                    if (this.musicInterval) clearInterval(this.musicInterval);
-                    if (onUpdate) onUpdate(false);
-                } else {
-                    isMusicPlaying = true;
-                    if (onUpdate) onUpdate(true);
-
-                    // Gentle Lofi Melody Notes
-                    const melody = [
-                        261.63, 329.63, 392.00, 523.25, 392.00, 329.63,
-                        293.66, 349.23, 440.00, 523.25, 440.00, 349.23,
-                        261.63, 329.63, 392.00, 493.88, 392.00, 329.63,
-                        220.00, 261.63, 329.63, 440.00, 329.63, 261.63
-                    ];
-
-                    this.musicInterval = setInterval(() => {
-                        if (!isMusicPlaying) return;
-                        const note = melody[this.noteIdx % melody.length];
-                        this.noteIdx++;
-
-                        try {
-                            const osc = this.ctx.createOscillator();
-                            const gain = this.ctx.createGain();
-
-                            osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(note * 1.5, this.ctx.currentTime);
-
-                            gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.2);
-
-                            osc.connect(gain);
-                            gain.connect(this.ctx.destination);
-
-                            osc.start();
-                            osc.stop(this.ctx.currentTime + 1.2);
-                        } catch(e) {}
-                    }, 400);
-                }
-            }
-        }
-
-        soundEngine = new WebAudioEngine();
-
-        function toggleMusicBox() {
-            soundEngine.toggleMusic((playing) => {
-                document.getElementById('musicIcon').textContent = playing ? '🎵' : '🔇';
-                document.getElementById('musicText').textContent = playing ? 'Музыка: Вкл' : 'Музыка: Выкл';
-            });
-        }
-
-        // --- STEP TRANSITIONS ---
-        function openEnvelope() {
-            soundEngine.playBurst();
-            spawnParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 35);
-
-            document.getElementById('envelopePhase').classList.add('opacity-0', 'scale-90');
-            setTimeout(() => {
-                document.getElementById('envelopePhase').classList.add('hidden');
-                const clicker = document.getElementById('clickerPhase');
-                clicker.classList.remove('hidden');
-                clicker.classList.add('flex');
-            }, 500);
-        }
-
-        function clickHeart(event) {
-            clickCount++;
-            
-            // Sound & Physics
-            soundEngine.playPop(350 + clickCount * 30);
-            
-            // Floating +1 number
-            showFloatingText(event.clientX, event.clientY, `+1 Любовь! 💖`);
-            
-            // Particles
-            spawnParticleBurst(event.clientX, event.clientY, 8);
-
-            // Progress Bar Update
-            const pct = Math.min(100, (clickCount / maxClicks) * 100);
-            const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = `${pct}%`;
-            document.getElementById('clickCount').textContent = clickCount;
-
-            const messages = [
-                "Ещё чуточку! 💕",
-                "Сердечко растёт! ✨",
-                "Почти получилось! 🌸",
-                "Много-много любви! 💖",
-                "Смотри, оно сейчас лопнет! 🎉"
-            ];
-            document.getElementById('clickMsg').textContent = messages[Math.floor((clickCount/maxClicks) * messages.length)] || "Ещё разок! ✨";
-
-            // Trigger Explosion on 10 clicks
-            if (clickCount >= maxClicks) {
-                setTimeout(triggerGrandReveal, 300);
-            }
-        }
-
-        function showFloatingText(x, y, text) {
-            const el = document.createElement('div');
-            el.className = 'floating-heart-num';
-            el.textContent = text;
-            el.style.left = `${x - 30}px`;
-            el.style.top = `${y - 20}px`;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 900);
-        }
-
-        function triggerGrandReveal() {
-            soundEngine.playBurst();
-            
-            // Grand particle explosion
-            for(let i = 0; i < 4; i++) {
-                setTimeout(() => {
-                    spawnParticleBurst(
-                        Math.random() * window.innerWidth, 
-                        Math.random() * window.innerHeight * 0.7, 
-                        40
-                    );
-                }, i * 200);
-            }
-
-            document.getElementById('clickerPhase').classList.add('opacity-0', 'scale-90');
-            setTimeout(() => {
-                document.getElementById('clickerPhase').classList.add('hidden');
-                const reveal = document.getElementById('revealPhase');
-                reveal.classList.remove('hidden');
-                reveal.classList.add('flex');
-                
-                // Auto hug animation on reveal
-                triggerHugAnimation();
-            }, 600);
-        }
-
-        function triggerHugAnimation() {
-            soundEngine.playBurst();
-            const group = document.getElementById('catsSvgGroup');
-            group.classList.remove('hug-anim');
-            void group.offsetWidth; // trigger reflow
-            group.classList.add('hug-anim');
-
-            // Heart Rain
-            for(let i = 0; i < 25; i++) {
-                setTimeout(() => {
-                    spawnParticleBurst(
-                        Math.random() * window.innerWidth, 
-                        -20, 
-                        2, 
-                        true
-                    );
-                }, i * 80);
-            }
-        }
-
-        // --- COMPLIMENT JAR MODAL ---
-        function openComplimentJar() {
-            soundEngine.playPop(520);
-            document.getElementById('complimentModal').classList.remove('hidden');
-            nextCompliment();
-        }
-
-        function closeComplimentJar() {
-            soundEngine.playPop(300);
-            document.getElementById('complimentModal').classList.add('hidden');
-        }
-
-        function nextCompliment() {
-            soundEngine.playPop(600);
-            const card = document.getElementById('polaroidCard');
-            card.classList.add('scale-95', 'opacity-50');
-            
-            setTimeout(() => {
-                const text = compliments[complimentIdx % compliments.length];
-                complimentIdx++;
-                document.getElementById('complimentText').textContent = `«${text}»`;
-                card.classList.remove('scale-95', 'opacity-50');
-            }, 150);
-        }
-
-        function resetValentine() {
-            clickCount = 0;
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('clickCount').textContent = '0';
-            
-            document.getElementById('revealPhase').classList.add('hidden');
-            document.getElementById('clickerPhase').classList.add('hidden');
-            
-            const env = document.getElementById('envelopePhase');
-            env.classList.remove('hidden', 'opacity-0', 'scale-90');
-        }
-
-
-        // ================= CANVAS PARTICLE SYSTEM =================
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor(x, y, isFalling = false) {
-                this.x = x || Math.random() * canvas.width;
-                this.y = y || (isFalling ? -10 : Math.random() * canvas.height);
-                this.size = Math.random() * 12 + 8;
-                this.vx = (Math.random() - 0.5) * (isFalling ? 2 : 1.5);
-                this.vy = isFalling ? (Math.random() * 2 + 1.5) : (Math.random() - 0.5) * 1.5 - 0.5;
-                this.alpha = 1;
-                this.decay = Math.random() * 0.01 + 0.005;
-                this.color = ['#ff4d6d', '#ff758f', '#ffb3c1', '#c9184a', '#ff85a1'][Math.floor(Math.random() * 5)];
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotSpeed = (Math.random() - 0.5) * 0.05;
-                this.type = Math.random() > 0.3 ? 'heart' : 'sparkle';
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.rotation += this.rotSpeed;
-                this.alpha -= this.decay;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, this.alpha);
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                ctx.fillStyle = this.color;
-
-                if (this.type === 'heart') {
-                    // Draw Heart Path
-                    ctx.beginPath();
-                    const topCurveHeight = this.size * 0.3;
-                    ctx.moveTo(0, topCurveHeight);
-                    ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
-                    ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
-                    ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
-                    ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
-                    ctx.closePath();
-                    ctx.fill();
-                } else {
-                    // Draw Sparkle
-                    ctx.beginPath();
-                    for (let i = 0; i < 4; i++) {
-                        ctx.lineTo(Math.cos((i * Math.PI) / 2) * this.size, Math.sin((i * Math.PI) / 2) * this.size);
-                        ctx.lineTo(Math.cos((i * Math.PI) / 2 + Math.PI / 4) * (this.size / 3), Math.sin((i * Math.PI) / 2 + Math.PI / 4) * (this.size / 3));
-                    }
-                    ctx.closePath();
-                    ctx.fill();
-                }
-
-                ctx.restore();
-            }
-        }
-
-        function spawnParticleBurst(x, y, count = 15, isFalling = false) {
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle(x, y, isFalling));
-            }
-        }
-
-        // Persistent ambient floating background hearts
-        setInterval(() => {
-            if (particles.length < 45) {
-                particles.push(new Particle(Math.random() * canvas.width, canvas.height + 10, false));
-            }
-        }, 300);
-
-        function animateCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.update();
-                p.draw();
-
-                if (p.alpha <= 0 || p.y > canvas.height + 20) {
-                    particles.splice(i, 1);
-                }
-            }
-
-            requestAnimationFrame(animateCanvas);
-        }
-
-        window.onload = function() {
-            animateCanvas();
-        };
-    </script>
+<body>
+<canvas id="cv"></canvas>
+<div id="bar"><button id="mb" type="button">🔇 Музыка: выкл</button><button id="rs" type="button">🔄</button></div>
+<div id="toast"></div>
+<main>
+
+<section class="scene on card" id="s0" style="background:none;box-shadow:none">
+<span class="tag">Глава I из V</span>
+<div id="env"><div class="body"></div><div id="flap"></div><div id="strip">✂ потяни за скотч</div><div id="seal">💖</div></div>
+<p class="hand" id="hint" style="font-size:1.7rem;margin-top:20px">Тебе пришло секретное послание… ✨</p>
+</section>
+
+<section class="scene card" id="s1"><div class="tape"></div>
+<span class="tag">Глава II: Заряд любви</span>
+<h2>Наполни сердечко нежностью 💖</h2>
+<p style="font-size:.8rem;opacity:.8">Жми быстро: x2, x5, x10 — и заряд растёт быстрее!</p>
+<div class="bar"><div id="fill"></div></div>
+<div style="display:flex;justify-content:space-between;font-size:.75rem"><span>Энергия: <b id="en">0</b>/40</span><span id="combo"></span></div>
+<button id="heart" type="button" aria-label="Сердечко"><svg width="170" height="160" viewBox="0 0 100 94"><path d="M50 88S12 62 12 35C12 20 23 12 35 12c7 0 12 4 15 9 3-5 8-9 15-9 12 0 23 8 23 23 0 27-38 53-38 53z" fill="#ff4d6d"/><path d="M50 83S16 58 16 35c0-12 9-19 19-19 6 0 11 3 15 8 4-5 9-8 15-8 10 0 19 7 19 19 0 23-34 48-34 48z" fill="#ff8fa3" opacity=".5"/><path d="M50 85S14 60 14 35c0-14 10-21 21-21 6 0 11 3 15 8 4-5 9-8 15-8 11 0 21 7 21 21 0 25-36 50-36 50z" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 3"/><circle cx="29" cy="27" r="3" fill="#fff" opacity=".8"/></svg></button>
+<p class="hand" id="cm" style="font-size:1.6rem;min-height:34px">Каждый клик согревает котиков…</p>
+</section>
+
+<section class="scene card" id="s2"><div class="tape"></div>
+<span class="tag">Глава III: Ловец сердечек</span> <b style="font-size:.8rem">Счёт: <span id="sc">0</span>/15 <span id="lv">❤️❤️❤️</span></b>
+<h2 style="font-size:1.15rem">Лови 💖🐟✨ и обходи тучки ☁️</h2>
+<div id="field"><div id="pc"></div><div id="over"><div class="hand" style="font-size:2rem">Котик промок ☁️</div><button class="btn" id="again" type="button">Ещё раз 🐾</button></div></div>
+<div class="ctl"><button class="btn s" id="bl" type="button">◀</button><button class="btn s" id="br" type="button">▶</button></div>
+<p style="font-size:.72rem;opacity:.75">Палец или мышь — тащи котика. Клавиши: ← → или A D. Золотое сердце 💝 даёт +3!</p>
+</section>
+
+<section class="scene card" id="s3"><div class="tape"></div>
+<span class="tag">Глава IV: Полароиды и баночка</span>
+<h2>Наши записочки ✨</h2>
+<div class="pol" id="pol"><div class="pic"><span id="pe">🌸</span><div class="t hand" id="pt"></div></div><div class="d" id="pd"></div></div>
+<div><button class="btn s" id="pp" type="button">‹</button><span id="pn" style="font-size:.8rem"></span><button class="btn s" id="pnx" type="button">›</button></div>
+<div><button class="btn s" id="ed" type="button">✏️ Править</button><button class="btn s" id="ad" type="button">➕ Новая</button></div>
+<p style="font-size:.8rem;margin-top:14px">Баночка с оригами — нажми, достань комплимент:</p>
+<div id="jar"></div><div id="note" class="hand"></div>
+<button class="btn g" id="fin" type="button">✨ Гранд-финал</button>
+</section>
+
+<section class="scene card" id="s4"><div class="tape"></div>
+<svg id="cats" viewBox="0 0 300 250" role="img" aria-label="Два котика обнимаются"></svg>
+<h2 style="font-size:1.35rem">Я ТЕБЯ ОЧЕНЬ СИЛЬНО ЛЮБЛЮ, <span id="nm2">ЛАПОЧКА</span>! 💖</h2>
+<div id="cert"><h3>СЕРТИФИКАТ ЛЮБВИ</h3>
+<p style="font-size:.8rem">Настоящим удостоверяется, что</p>
+<p class="hand" id="who" style="font-size:2rem;color:#c9184a" contenteditable="true" spellcheck="false">Лапочка</p>
+<p style="font-size:.75rem">любима на 100% и без срока годности. Выдан <b id="dt"></b></p>
+<div id="letter" class="hand" contenteditable="true" spellcheck="false">Моя хорошая, ты делаешь каждый день теплее и ярче! Спасибо за искреннюю улыбку, нежность и за то, что ты есть у меня. Ты — моё главное счастье и любимое солнышко ☀️<br><span style="color:#c9184a;float:right">Твой котик ❤️</span></div>
+<div style="clear:both"></div><p style="font-size:.68rem;opacity:.7">Имя и письмо можно править прямо тут ✏️</p></div>
+<div><button class="btn" id="hg" type="button">🐾 Обнять</button><button class="btn g" id="pu" type="button">🐱 Помурчать</button><button class="btn s" id="cf" type="button">🎉 Конфетти</button><button class="btn s" id="sv" type="button">💾 Сохранить письмо</button></div>
+</section>
+</main>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var cur=0,locked=false,musicOn=false,AC=null;
+function toast(t){var e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.opacity=0},2200)}
+function vib(n){try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);return true}catch(e){return null}}
+/* ---------- audio ---------- */
+function ac(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}return AC}
+function tone(f,d,type,v,delay){var c=ac();if(!c)return;var t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(v||.15,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d)}
+function rustle(d){var c=ac();if(!c)return;var n=c.sampleRate*d,b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0),i;for(i=0;i<n;i++)a[i]=(Math.random()*2-1)*(1-i/n)*(Math.random()>.7?1:.3);var s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();f.type='bandpass';f.frequency.value=3200;g.gain.value=.5;s.buffer=b;s.connect(f);f.connect(g);g.connect(c.destination);s.start()}
+function burstSnd(){[523,659,784,1047,1319].forEach(function(f,i){tone(f,.3,'sine',.12,i*.06)})}
+function purr(){for(var i=0;i<14;i++)tone(70+Math.random()*14,.16,'triangle',.18,i*.09)}
+var mel=[523,659,784,988,784,659,587,698,880,1047,880,698,523,659,784,1047,988,784,659,523],mi=0,mt=null;
+function music(on){musicOn=on;clearInterval(mt);$('mb').textContent=on?'🎵 Музыка: вкл':'🔇 Музыка: выкл';if(on){ac();mt=setInterval(function(){var f=mel[mi++%mel.length];tone(f,1.2,'sine',.07);tone(f*2,.5,'sine',.025)},420)}}
+$('mb').onclick=function(){music(!musicOn)};
+/* ---------- particles ---------- */
+var cv=$('cv'),cx=cv.getContext('2d'),P=[];
+function fit(){var r=window.devicePixelRatio||1;cv.width=innerWidth*r;cv.height=innerHeight*r;cx.setTransform(r,0,0,r,0,0)}
+addEventListener('resize',fit);fit();
+function burst(x,y,n,em){for(var i=0;i<n&&P.length<260;i++){var a=Math.random()*6.28,s=1+Math.random()*4;P.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,g:.12,l:1,d:.014+Math.random()*.01,e:em||['💖','✨','🌸','💕'][i%4],s:12+Math.random()*12})}}
+function confetti(){var c=['#ff4d6d','#ffb703','#ffb3c1','#8ecae6','#b8f2c9'];for(var i=0;i<90&&P.length<300;i++)P.push({x:Math.random()*innerWidth,y:-10-Math.random()*200,vx:(Math.random()-.5)*2,vy:2+Math.random()*3,g:.03,l:1,d:.004,c:c[i%5],w:6+Math.random()*6,r:Math.random()*6})}
+(function loop(){cx.clearRect(0,0,innerWidth,innerHeight);for(var i=P.length-1;i>=0;i--){var p=P[i];p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l-=p.d;if(p.l<=0||p.y>innerHeight+30){P.splice(i,1);continue}cx.globalAlpha=Math.min(1,p.l*2);if(p.e){cx.font=p.s+'px serif';cx.fillText(p.e,p.x,p.y)}else{p.r+=.15;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.w/3,p.w,p.w*.6);cx.restore()}}cx.globalAlpha=1;requestAnimationFrame(loop)})();
+/* ---------- scenes ---------- */
+function go(n){if(n===cur)return;var prev=$('s'+cur);if(prev)prev.classList.remove('on');cur=n;$('s'+n).classList.add('on');locked=false;if(n===2)startGame();else stopGame();if(n===3)renderPol();if(n===4){$('dt').textContent=new Date().toLocaleDateString('ru-RU');setTimeout(hug,300);setTimeout(confetti,500)}}
+/* ch1 */
+var stage=0;
+$('strip').onclick=function(){if(stage!==0)return;stage=1;this.classList.add('torn');rustle(.5);vib(30);$('hint').textContent='Теперь сургучная печать… нажми на неё 💖'};
+$('seal').onclick=function(){if(stage!==1){toast('Сначала сорви скотч ✂');return}stage=2;this.classList.add('melt');tone(180,.8,'sawtooth',.05);setTimeout(function(){rustle(.7);$('env').classList.add('open')},900);setTimeout(function(){burstSnd();burst(innerWidth/2,innerHeight/2,30);go(1)},2000)};
+/* ch2 */
+var en=0,combo=0,lastT=0;
+$('heart').onclick=function(e){if(locked)return;var n=performance.now();combo=(n-lastT<550)?combo+1:1;lastT=n;var m=combo>=10?10:combo>=5?5:combo>=2?2:1;en=Math.min(40,en+m);vib(m>=5?[15,10,15]:15);tone(330+en*14+m*20,.14,'sine',.2);var x=e.clientX||innerWidth/2,y=e.clientY||innerHeight/2;pop(x,y,m>1?'x'+m+' КОМБО!':'+1 💕');burst(x,y,3+m);
+this.animate([{transform:'scale(.8) rotate(-4deg)'},{transform:'scale(1.15) rotate(3deg)'},{transform:'scale(1)'}],{duration:380,easing:'cubic-bezier(.3,1.7,.5,1)'});
+$('fill').style.width=en/40*100+'%';$('en').textContent=en;$('combo').textContent=m>1?'🔥 x'+m:'';
+var ms=['Ещё чуточку! 💕','Сердечко расцветает ✨','Почти готово! 🌸','Много-много любви 💖'];$('cm').textContent=ms[Math.min(3,Math.floor(en/40*4))];
+if(en>=40){locked=true;burstSnd();setTimeout(function(){go(2)},600)}};
+function pop(x,y,t){var e=document.createElement('div');e.className='pop';e.textContent=t;e.style.left=(x-30)+'px';e.style.top=(y-30)+'px';document.body.appendChild(e);setTimeout(function(){e.remove()},800)}
+/* ch3 game */
+var F=$('field'),g={on:false,score:0,lives:3,x:150,it:[],sp:0,last:0,raf:0,k:{},b:0};
+var catSvg='<svg viewBox="0 0 100 100"><path d="M18 40L22 8 44 30zM82 40L78 8 56 30z" fill="#fff9f5" stroke="#4a352f" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="58" rx="38" ry="32" fill="#fff9f5" stroke="#4a352f" stroke-width="4"/><path d="M30 52q6-8 12 0M58 52q6-8 12 0" fill="none" stroke="#4a352f" stroke-width="4" stroke-linecap="round"/><ellipse cx="26" cy="64" rx="6" ry="4" fill="#ffb3c1"/><ellipse cx="74" cy="64" rx="6" ry="4" fill="#ffb3c1"/><path d="M45 62q5 6 10 0" fill="none" stroke="#4a352f" stroke-width="3"/></svg>';
+$('pc').innerHTML=catSvg;
+function lives(){$('lv').textContent=g.lives>0?'❤️'.repeat(g.lives):'💔'}
+function startGame(){stopGame();F.querySelectorAll('.it').forEach(function(e){e.remove()});g.it=[];g.score=0;g.lives=3;g.sp=.5;g.x=F.clientWidth/2;g.on=true;g.last=performance.now();$('sc').textContent=0;lives();$('over').style.display='none';g.raf=requestAnimationFrame(tick)}
+function stopGame(){g.on=false;cancelAnimationFrame(g.raf)}
+function tick(t){if(!g.on)return;var dt=Math.min(.04,(t-g.last)/1000);g.last=t;var W=F.clientWidth,H=F.clientHeight;
+var d=(g.k.ArrowRight||g.k.d?1:0)-(g.k.ArrowLeft||g.k.a?1:0)+g.b;g.x=Math.max(30,Math.min(W-30,g.x+d*430*dt));$('pc').style.transform='translateX('+(g.x-30)+'px)';
+g.sp-=dt;if(g.sp<=0){g.sp=Math.max(.35,.85-g.score*.03);var r=Math.random(),k=r<.22?'☁️':r<.27?'💝':['💖','🐟','✨'][Math.floor(Math.random()*3)];var el=document.createElement('div');el.className='it';el.textContent=k;F.appendChild(el);g.it.push({el:el,k:k,x:24+Math.random()*(W-48),y:-30,v:130+g.score*7+Math.random()*50})}
+for(var i=g.it.length-1;i>=0;i--){var o=g.it[i];o.y+=o.v*dt;o.el.style.transform='translate('+(o.x-14)+'px,'+o.y+'px)';
+if(o.y>H-62&&o.y<H-8&&Math.abs(o.x-g.x)<36){var rect=F.getBoundingClientRect();if(o.k==='☁️'){g.lives--;lives();F.classList.remove('shake');void F.offsetWidth;F.classList.add('shake');vib(120);tone(150,.3,'sawtooth',.08);burst(rect.left+o.x,rect.top+o.y,5,'💧')}else{var pts=o.k==='💝'?3:1;g.score+=pts;$('sc').textContent=g.score;tone(450+g.score*35,.15,'sine',.2);vib(12);burst(rect.left+o.x,rect.top+o.y,4+pts*2)}
+o.el.remove();g.it.splice(i,1);
+if(g.lives<=0){g.on=false;$('over').style.display='flex';return}
+if(g.score>=15){g.on=false;burstSnd();burst(innerWidth/2,innerHeight/2,30);if(!locked){locked=true;setTimeout(function(){go(3)},900)}return}}
+else if(o.y>H){o.el.remove();g.it.splice(i,1)}}
+g.raf=requestAnimationFrame(tick)}
+$('again').onclick=startGame;
+function setX(e){var r=F.getBoundingClientRect();g.x=Math.max(30,Math.min(r.width-30,e.clientX-r.left))}
+F.addEventListener('pointerdown',function(e){setX(e)});F.addEventListener('pointermove',function(e){if(e.buttons||e.pointerType==='touch')setX(e)});
+addEventListener('keydown',function(e){var k=e.key.length===1?e.key.toLowerCase():e.key;g.k[k]=true;if(cur===2&&k.indexOf('Arrow')===0)e.preventDefault()});
+addEventListener('keyup',function(e){g.k[e.key.length===1?e.key.toLowerCase():e.key]=false});
+function hold(id,v){var b=$(id);b.addEventListener('pointerdown',function(e){e.preventDefault();g.b=v});['pointerup','pointerleave','pointercancel'].forEach(function(ev){b.addEventListener(ev,function(){g.b=0})})}
+hold('bl',-1);hold('br',1);
+/* ch4 polaroids + jar */
+var cards=[{e:'🌸',t:'Ты — моё самое тёплое солнышко ☀️',d:'Наша памятная дата: нажми ✏️ и впиши'},{e:'🐱',t:'С твоей улыбкой любой день особенный ✨',d:'Дата: ____'},{e:'🧸',t:'Ты самая нежная и замечательная на свете 💕',d:'Дата: ____'},{e:'🍯',t:'Рядом с тобой моё сердце бьётся чаще 💖',d:'Дата: ____'},{e:'💌',t:'Твои обнимашки — лучшее лекарство 🐾',d:'Дата: ____'},{e:'🍃',t:'Обожаю твою искренность и твои волшебные глаза',d:'Дата: ____'}];
+try{var sv=JSON.parse(store('cl_cards')||'null');if(Array.isArray(sv)&&sv.length)cards=sv}catch(e){}
+var pi=0,editing=false,emo=['🌸','🐱','🧸','🍯','💌','🍃','🌷','⭐'];
+function renderPol(){var c=cards[pi];$('pe').textContent=c.e;$('pt').textContent=c.t;$('pd').textContent=c.d;$('pn').textContent=' '+(pi+1)+' / '+cards.length+' ';$('pol').style.transform='rotate('+(pi%2?2:-2)+'deg)'}
+function saveCard(){if(!editing)return;cards[pi].t=$('pt').textContent;cards[pi].d=$('pd').textContent;store('cl_cards',JSON.stringify(cards))}
+function setEdit(on){saveCard();editing=on;['pt','pd'].forEach(function(i){$(i).contentEditable=on?'true':'false'});$('ed').textContent=on?'✅ Готово':'✏️ Править';if(on)$('pt').focus()}
+function step(d){setEdit(false);pi=(pi+d+cards.length)%cards.length;tone(500,.12,'sine',.15);renderPol();$('pol').animate([{opacity:.3,transform:'translateX('+(d*30)+'px)'},{opacity:1}],{duration:250})}
+$('pp').onclick=function(){step(-1)};$('pnx').onclick=function(){step(1)};$('pol').onclick=function(e){if(!editing&&e.target.id!=='pt'&&e.target.id!=='pd')step(1)};
+$('ed').onclick=function(){setEdit(!editing)};
+$('ad').onclick=function(){setEdit(false);cards.push({e:emo[cards.length%emo.length],t:'Напиши здесь что-нибудь тёплое',d:'Дата: ____'});pi=cards.length-1;store('cl_cards',JSON.stringify(cards));renderPol();setEdit(true)};
+var comp=['Ты умеешь превращать обычный день в праздник 🎈','Твой смех — моя любимая мелодия 🎶','С тобой даже дождь — это уютно ☔','Ты красивая — и снаружи, и внутри 🌷','Ты делаешь меня лучше, сам не знаю как ✨','Обнять тебя — моё любимое занятие 🤗','Ты мой дом, даже когда мы далеко 🏡','Ты — самое приятное «привет» в моём дне 💌'];
+var jc=['#ff8fa3','#ffd166','#8ecae6','#b8f2c9','#cdb4db','#ffb3c1'];
+for(var q=0;q<12;q++){var s=document.createElement('i');s.style.background=jc[q%6];s.style.setProperty('--r',(Math.random()*80-40)+'deg');$('jar').appendChild(s)}
+$('jar').onclick=function(){rustle(.35);var pool=comp.concat(cards.map(function(c){return c.t}));var n=$('note');n.style.display='block';n.textContent='“'+pool[Math.floor(Math.random()*pool.length)]+'”';n.style.animation='none';void n.offsetWidth;n.style.animation='';var r=this.getBoundingClientRect();burst(r.left+r.width/2,r.top,6,'📜');vib(15)};
+$('fin').onclick=function(){setEdit(false);burstSnd();if(!locked){locked=true;go(4)}};
+/* ch5 finale */
+function cat(x,f){var s='#4a352f';return '<g class="'+(x<150?'c1':'c2')+'"><ellipse cx="'+x+'" cy="195" rx="56" ry="46" fill="'+f+'" stroke="'+s+'" stroke-width="4"/><path d="M'+(x-44)+' 90L'+(x-38)+' 52 '+(x-12)+' 76zM'+(x+44)+' 90L'+(x+38)+' 52 '+(x+12)+' 76z" fill="'+f+'" stroke="'+s+'" stroke-width="4" stroke-linejoin="round"/><circle cx="'+x+'" cy="112" r="46" fill="'+f+'" stroke="'+s+'" stroke-width="4"/><path d="M'+(x-26)+' 108q9-10 18 0M'+(x+8)+' 108q9-10 18 0" fill="none" stroke="'+s+'" stroke-width="4" stroke-linecap="round"/><ellipse cx="'+(x-32)+'" cy="124" rx="9" ry="5" fill="#ff7b8f" opacity=".6"/><ellipse cx="'+(x+32)+'" cy="124" rx="9" ry="5" fill="#ff7b8f" opacity=".6"/><path d="M'+(x-5)+' 119h10l-5 6z" fill="#ff6b81"/></g>'}
+$('cats').innerHTML='<path class="fh" d="M150 40c-10-20-34-6-26 12 5 10 26 22 26 22s21-12 26-22c8-18-16-32-26-12z" fill="#ff3b4e"/><path class="fh" d="M205 30c-6-10-18-3-14 6 3 5 14 11 14 11s11-6 14-11c4-9-8-16-14-6z" fill="#ff8fa3"/>'+cat(100,'#9a9595')+cat(200,'#fff9f5')+'<ellipse cx="150" cy="190" rx="52" ry="12" fill="#9a9595" stroke="#4a352f" stroke-width="4" transform="rotate(-8 150 190)"/><ellipse cx="150" cy="204" rx="52" ry="12" fill="#fff9f5" stroke="#4a352f" stroke-width="4" transform="rotate(8 150 204)"/>';
+function hug(){var c=$('cats');c.classList.remove('hug');void c.getBoundingClientRect();c.classList.add('hug');burstSnd();var r=c.getBoundingClientRect();burst(r.left+r.width/2,r.top+40,18,'💖');vib([20,40,20])}
+$('cats').onclick=hug;$('hg').onclick=hug;
+$('pu').onclick=function(){purr();vib([30,30,30,30,30]);var c=$('cats');c.classList.add('purr');setTimeout(function(){c.classList.remove('purr')},1300)};
+$('cf').onclick=function(){confetti();burstSnd()};
+$('who').oninput=function(){$('nm2').textContent=($('who').textContent||'ЛАПОЧКА').toUpperCase()};
+var sl=store('cl_letter'),sn=store('cl_name');if(sl)$('letter').innerHTML=sl;if(sn){$('who').textContent=sn;$('nm2').textContent=sn.toUpperCase()}
+$('sv').onclick=function(){var ok=store('cl_letter',$('letter').innerHTML)&&store('cl_name',$('who').textContent);var txt=$('who').textContent+', '+$('letter').innerText;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('Сохранено и скопировано 💌')},function(){toast(ok?'Сохранено на этом устройстве 💌':'Не удалось сохранить')})}else toast(ok?'Сохранено на этом устройстве 💌':'Не удалось сохранить');confetti()};
+/* reset */
+$('rs').onclick=function(){stopGame();setEdit(false);$('s'+cur).classList.remove('on');cur=-1;en=0;combo=0;stage=0;locked=false;$('fill').style.width='0';$('en').textContent=0;$('combo').textContent='';$('strip').classList.remove('torn');$('seal').classList.remove('melt');$('env').classList.remove('open');$('hint').textContent='Тебе пришло секретное послание… ✨';pi=0;go(0)};
+})();
+</script>
 </body>
 </html>
