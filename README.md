@@ -9,10 +9,28 @@
 
 [![Открыть репозиторий](https://img.shields.io/badge/GitHub-Открыть%20проект-c9184a?style=for-the-badge&logo=github)](https://github.com/MarFaus/valentinka)
 [![HTML](https://img.shields.io/badge/Сделано%20с-HTML%20%7C%20CSS%20%7C%20JavaScript-ff758f?style=for-the-badge)](#-технологии)
+[![Версия](https://img.shields.io/badge/версия-v0.1%20stable-ffb703?style=for-the-badge)](./CHANGELOG.md)
+
+<img src="docs/screenshots/5-finale.png" width="300" alt="Финал: обнимающиеся котики и сертификат любви">
 
 </div>
 
 ---
+
+## 📸 Скриншоты
+
+<table>
+<tr>
+<td align="center"><img src="docs/screenshots/1-envelope.png" width="200" alt="Глава I: конверт со скотчем и печатью"><br><sub><b>I.</b> Секретное послание</sub></td>
+<td align="center"><img src="docs/screenshots/2-clicker.png" width="200" alt="Глава II: сердечко-кликер с комбо"><br><sub><b>II.</b> Заряд любви</sub></td>
+<td align="center"><img src="docs/screenshots/3-game.png" width="200" alt="Глава III: мини-игра Ловец сердечек"><br><sub><b>III.</b> Ловец сердечек</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/screenshots/4-polaroids.png" width="200" alt="Глава IV: полароиды и баночка комплиментов"><br><sub><b>IV.</b> Полароиды и баночка</sub></td>
+<td align="center"><img src="docs/screenshots/5-finale.png" width="200" alt="Глава V: финал с сертификатом любви"><br><sub><b>V.</b> Гранд-финал</sub></td>
+<td align="center"><img src="docs/screenshots/5-finale-dark.png" width="200" alt="Финал в тёмной теме"><br><sub>🌙 Тёмная тема</sub></td>
+</tr>
+</table>
 
 ## ✨ Что ждёт внутри
 
@@ -71,6 +89,10 @@
 - цвета задаются CSS-переменными в `:root` (`--pink`, `--red`, `--deep`, `--gold` и др.).
 
 > Для загрузки шрифтов при открытии страницы нужно подключение к интернету. Без него валентинка работает с запасными шрифтами.
+
+## 🏷️ Версии
+
+Текущая стабильная версия — **v0.1**. Каждая версия отмечается git-тегом (`v0.1`, `v0.2`, …), а все изменения записываются в [`CHANGELOG.md`](./CHANGELOG.md).
 
 ## 🧰 Технологии
 
