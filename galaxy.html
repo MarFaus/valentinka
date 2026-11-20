@@ -64,6 +64,31 @@ body.album #album-hud .btn{pointer-events:auto}
 .lb-close{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px}
 @media (max-width:600px){.lb-nav{top:auto;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:none}.g-grid{grid-template-columns:repeat(2,1fr);gap:14px}.card p{font-size:18px}}
 
+/* прогресс к секретному финалу */
+#progress{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:12px;transition:opacity .5s,box-shadow .4s;cursor:default}
+#progress i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);transition:background .4s,box-shadow .4s}
+#progress i.on{background:var(--c);box-shadow:0 0 10px var(--c)}
+#progress.done{cursor:pointer;box-shadow:0 0 22px rgba(255,77,109,.55)}
+#progress.done:hover{background:rgba(255,77,109,.3)}
+body.focus #progress,body.intro #progress,body.finale #progress{opacity:0;pointer-events:none}
+body.finale .hud,body.finale #hint,body.finale #labels{opacity:0;pointer-events:none;animation:none}
+body.finale .hud > *{pointer-events:none}
+
+/* музыка */
+#music{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;width:46px;height:46px;padding:0;justify-content:center;font-size:18px}
+#music.on{box-shadow:0 0 18px rgba(255,77,109,.6);border-color:var(--pink)}
+.hint{max-width:calc(100vw - 150px)}
+@media (max-width:600px){#progress{font-size:0;gap:6px;padding:10px 12px}}
+
+/* секретный финал */
+#finale{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);z-index:12;width:min(540px,calc(100vw - 32px));padding:18px 20px;border-radius:20px;border:1px solid var(--line);background:rgba(20,8,32,.66);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);text-align:center;opacity:0;transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 40px rgba(255,77,109,.25)}
+#finale.show{opacity:1;transform:translate(-50%,0)}
+#finale[hidden]{display:none}
+.f-kicker{margin:0;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+.f-title{margin:4px 0 6px;font-size:clamp(28px,6vw,38px);line-height:1.05;color:var(--soft);text-shadow:0 0 18px rgba(255,77,109,.7)}
+.f-letter{margin:0 0 14px;font-size:clamp(20px,4.4vw,25px);line-height:1.25}
+.f-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
 #fail{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;font-size:16px;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.hint{animation:none}}
 </style>
@@ -77,6 +102,18 @@ body.album #album-hud .btn{pointer-events:auto}
 </div>
 <div id="labels"></div>
 <div class="hint hand" id="hint">Нажимай на планеты, сердце и звезду в центре ✨</div>
+<div id="progress" role="status" title="Открой все планеты — там секрет 🤫"><span id="p-text">Секрет 🤫</span></div>
+<button class="btn" id="music" type="button" aria-label="Включить музыку" aria-pressed="false">🔇</button>
+
+<section id="finale" hidden aria-live="polite">
+  <p class="f-kicker">секретный финал</p>
+  <h2 class="f-title hand">Ты нашла все наши воспоминания 💖</h2>
+  <p class="f-letter hand" id="f-letter"></p>
+  <div class="f-actions">
+    <button class="btn" id="f-replay" type="button">🔁 Ещё раз</button>
+    <button class="btn" id="f-back" type="button">Вернуться в галактику</button>
+  </div>
+</section>
 
 <div id="album-hud">
   <div class="a-top">
@@ -129,6 +166,48 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
    src: null — рисуется заглушка.
    ============================================================ */
 const HEART_TEXTS = [['Я тебя', 'люблю'], ['Ты моя', 'вселенная']];
+const FINALE_TEXT = ['Навсегда', 'вместе'];
+const FINALE_LETTER = 'Каждая планета здесь — кусочек нашей истории. Спасибо, что ты есть. Пусть впереди будет ещё целая вселенная таких моментов. Люблю тебя ❤️';
+// Своя песня: положи mp3 в репозиторий и впиши путь, например 'music/our-song.mp3'.
+// null — играет нежная мелодия, которая сочиняется прямо в браузере.
+const MUSIC_URL = null;
+
+/* ---------- форма сердца ---------- */
+const hx = (t) => 16 * Math.pow(Math.sin(t), 3);
+const hy = (t) => 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+const heartPoly = Array.from({ length: 200 }, (_, k) => [hx(k / 200 * Math.PI * 2), hy(k / 200 * Math.PI * 2)]);
+function insideHeart(x, y) {
+  let ok = false;
+  for (let p = 0, q = heartPoly.length - 1; p < heartPoly.length; q = p++) {
+    const [xi, yi] = heartPoly[p], [xj, yj] = heartPoly[q];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ok = !ok;
+  }
+  return ok;
+}
+// длины отрезков контура — чтобы точки ложились равномерно, без сгустка на вершине
+const heartCum = (() => {
+  const out = [0];
+  for (let k = 1; k <= heartPoly.length; k++) {
+    const [ax, ay] = heartPoly[k - 1], [bx, by] = heartPoly[k % heartPoly.length];
+    out.push(out[k - 1] + Math.hypot(bx - ax, by - ay));
+  }
+  return out;
+})();
+// точка сердца: edge — на контуре, иначе внутри; координаты в «единицах формулы» (ширина ±16)
+function heartPoint(edge) {
+  if (edge) {
+    const L = Math.random() * heartCum[heartCum.length - 1];
+    let k = 1; while (heartCum[k] < L) k++;
+    const s = (L - heartCum[k - 1]) / (heartCum[k] - heartCum[k - 1]);
+    const [ax, ay] = heartPoly[k - 1], [bx, by] = heartPoly[k % heartPoly.length];
+    const f = 1 - Math.random() * 0.06;
+    return [(ax + (bx - ax) * s) * f, (ay + (by - ay) * s) * f, 0.25];
+  }
+  let x, y;
+  do { x = (Math.random() * 2 - 1) * 16.5; y = Math.random() * 30 - 17.5; } while (!insideHeart(x, y));
+  return [x, y, 1];
+}
+const BIG_HEART = { s: 0.55, y: 11 };  // большое сердце из галактики в финале
 const ALBUMS = [
   { title: 'Как всё началось', emoji: '💌', color: '#ff7aa2', photos: [
     { src: null, wish: 'Тот самый день, с которого всё началось' },
@@ -255,8 +334,8 @@ const pointsFrag = /* glsl */`
   }`;
 const spinVert = /* glsl */`
   uniform float uTime; uniform float uSize; uniform float uPR; uniform float uSpin;
-  uniform float uWave; uniform float uWaveAmp;
-  attribute float aScale; attribute vec3 aColor;
+  uniform float uWave; uniform float uWaveAmp; uniform float uFinale;
+  attribute float aScale; attribute vec3 aColor; attribute vec3 aHeart; attribute float aRandG; attribute float aEdge;
   varying vec3 vColor;
   void main(){
     vec3 p = position;
@@ -265,10 +344,20 @@ const spinVert = /* glsl */`
     float w = uWaveAmp * exp(-pow((d - uWave) * 0.9, 2.0));
     float nd = d * (1.0 + 0.16 * w);
     p.x = sin(a) * nd; p.z = cos(a) * nd; p.y += w * 0.7 * sin(d * 2.5 + uTime * 4.0);
+    // секретный финал: галактика собирается в огромное бьющееся сердце
+    float fk = clamp(uFinale * 1.5 - aRandG * 0.5, 0.0, 1.0);
+    fk = fk * fk * (3.0 - 2.0 * fk);
+    float beat = pow(abs(sin(uTime * 1.9)), 6.0) * fk;
+    vec3 hp = aHeart;
+    hp.xy = (hp.xy - vec2(0.0, ${BIG_HEART.y.toFixed(1)})) * (1.0 + 0.04 * beat) + vec2(0.0, ${BIG_HEART.y.toFixed(1)});
+    hp += 0.08 * vec3(sin(uTime * 1.3 + aRandG * 50.0), cos(uTime * 1.1 + aRandG * 40.0), 0.0) * fk;
+    p = mix(p, hp, fk) + vec3(0.0, sin(fk * 3.14159) * 3.0 * (aRandG - 0.5), 0.0);
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
-    gl_PointSize = min(uSize * aScale * uPR / -mv.z * (1.0 + w), 9.0 * uPR);
-    vColor = aColor * (1.0 + 2.2 * w);
+    gl_PointSize = min(uSize * aScale * uPR / -mv.z * (1.0 + w + 0.6 * fk + 0.4 * beat), 9.0 * uPR);
+    // внутренность большого сердца приглушена, чтобы надпись в центре читалась
+    float fill = mix(1.0, mix(0.42, 1.3, aEdge), fk);
+    vColor = mix(aColor, aColor * vec3(1.5, 0.75, 1.15) + vec3(0.06, 0.0, 0.03), fk) * (1.0 + 2.2 * w + 0.5 * beat) * fill;
   }`;
 function pointsMaterial(vert, uniforms) {
   return new THREE.ShaderMaterial({
@@ -303,8 +392,16 @@ const galaxy = (() => {
     col[i * 3] = c.r * b; col[i * 3 + 1] = c.g * b; col[i * 3 + 2] = c.b * b;
     sc[i] = 0.4 + Math.random() * 1.1;
   }
-  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1]]),
-    pointsMaterial(spinVert, { uSize: { value: 58 }, uSpin: { value: reduced ? 0.3 : 1 }, uWave: { value: -10 }, uWaveAmp: { value: 0 } }));
+  const hpos = new Float32Array(N * 3), rg = new Float32Array(N), edgeF = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const edge = Math.random() < 0.4;
+    const [x, y, depth] = heartPoint(edge);
+    hpos[i * 3] = x * BIG_HEART.s; hpos[i * 3 + 1] = y * BIG_HEART.s + BIG_HEART.y; hpos[i * 3 + 2] = (Math.random() - 0.5) * 2.4 * depth;
+    rg[i] = Math.random();
+    edgeF[i] = edge ? 1 : 0;
+  }
+  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1], ['aHeart', hpos, 3], ['aRandG', rg, 1], ['aEdge', edgeF, 1]]),
+    pointsMaterial(spinVert, { uSize: { value: 58 }, uSpin: { value: reduced ? 0.3 : 1 }, uWave: { value: -10 }, uWaveAmp: { value: 0 }, uFinale: { value: 0 } }));
   scene.add(pts);
   return pts;
 })();
@@ -320,8 +417,8 @@ const stars = (() => {
     col.set([w, w * (0.85 + Math.random() * 0.15), w], i * 3);
     sc[i] = 0.6 + Math.random() * 1.6;
   }
-  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1]]),
-    pointsMaterial(spinVert, { uSize: { value: 170 }, uSpin: { value: 0 }, uWave: { value: -10 }, uWaveAmp: { value: 0 } }));
+  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1], ['aHeart', pos, 3], ['aRandG', new Float32Array(N), 1], ['aEdge', new Float32Array(N).fill(1), 1]]),
+    pointsMaterial(spinVert, { uSize: { value: 170 }, uSpin: { value: 0 }, uWave: { value: -10 }, uWaveAmp: { value: 0 }, uFinale: { value: 0 } }));
   scene.add(pts);
   return pts;
 })();
@@ -348,27 +445,9 @@ const heart = (() => {
   const N = HEART_N, S = 0.17;
   const pos = new Float32Array(N * 3), start = new Float32Array(N * 3), col = new Float32Array(N * 3), sc = new Float32Array(N), rnd = new Float32Array(N);
   const a = new THREE.Color('#ff2fa0'), b = new THREE.Color('#ffa3e0'), c = new THREE.Color();
-  const hx = (t) => 16 * Math.pow(Math.sin(t), 3);
-  const hy = (t) => 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-  const poly = Array.from({ length: 200 }, (_, k) => [hx(k / 200 * Math.PI * 2), hy(k / 200 * Math.PI * 2)]);
-  const inside = (x, y) => {
-    let ok = false;
-    for (let p = 0, q = poly.length - 1; p < poly.length; q = p++) {
-      const [xi, yi] = poly[p], [xj, yj] = poly[q];
-      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ok = !ok;
-    }
-    return ok;
-  };
   for (let i = 0; i < N; i++) {
     const edge = Math.random() < 0.6;
-    let x, y, depth;
-    if (edge) {
-      const t = Math.random() * Math.PI * 2, f = 1 - Math.random() * 0.06;
-      x = hx(t) * f; y = hy(t) * f; depth = 0.25;
-    } else {
-      do { x = (Math.random() * 2 - 1) * 16.5; y = Math.random() * 30 - 17.5; } while (!inside(x, y));
-      depth = 1;
-    }
+    const [x, y, depth] = heartPoint(edge);
     pos[i * 3] = x * S; pos[i * 3 + 1] = y * S + 0.4; pos[i * 3 + 2] = (Math.random() - 0.5) * 1.1 * depth;
     const v = new THREE.Vector3().randomDirection().multiplyScalar(10 + Math.random() * 25);
     start.set([v.x, v.y, v.z], i * 3);
@@ -378,20 +457,20 @@ const heart = (() => {
     rnd[i] = Math.random();
   }
   const geo = pointsGeo([['position', pos, 3], ['aStart', start, 3], ['aColor', col, 3], ['aScale', sc, 1], ['aRand', rnd, 1],
-    ['aT1', pos.slice(), 3], ['aT2', pos.slice(), 3]]);
+    ['aT1', pos.slice(), 3], ['aT2', pos.slice(), 3], ['aT3', pos.slice(), 3]]);
   const mat = pointsMaterial(/* glsl */`
     uniform float uTime; uniform float uSize; uniform float uPR; uniform float uForm;
-    uniform vec3 uFrom; uniform vec3 uTo; uniform float uMix;
+    uniform vec4 uFrom; uniform vec4 uTo; uniform float uMix;
     uniform vec3 uMouse; uniform float uMouseOn;
     attribute vec3 aStart; attribute vec3 aColor; attribute float aScale; attribute float aRand;
-    attribute vec3 aT1; attribute vec3 aT2;
+    attribute vec3 aT1; attribute vec3 aT2; attribute vec3 aT3;
     varying vec3 vColor;
     void main(){
-      // смена формы: сердце -> надпись 1 -> надпись 2, у каждой частицы своя задержка
+      // смена формы: сердце / надпись 1 / надпись 2 / надпись финала, у каждой частицы своя задержка
       float m = clamp(uMix * 1.5 - aRand * 0.5, 0.0, 1.0);
       m = m * m * (3.0 - 2.0 * m);
-      vec3 w = mix(uFrom, uTo, m);
-      vec3 shape = position * w.x + aT1 * w.y + aT2 * w.z;
+      vec4 w = mix(uFrom, uTo, m);
+      vec3 shape = position * w.x + aT1 * w.y + aT2 * w.z + aT3 * w.w;
       shape += normalize(aStart) * sin(m * 3.14159) * (1.2 + aRand * 1.8);
       // сборка из пыли на старте
       float k = clamp(uForm * 1.6 - aRand * 0.6, 0.0, 1.0);
@@ -408,10 +487,10 @@ const heart = (() => {
       vec4 mv = modelViewMatrix * vec4(p, 1.0);
       gl_Position = projectionMatrix * mv;
       gl_PointSize = uSize * aScale * uPR / -mv.z * (1.0 + 0.35 * beat);
-      vColor = aColor * (0.75 + 0.55 * beat + 0.6 * uMouseOn * smoothstep(1.8, 0.0, dist));
+      vColor = mix(aColor, vec3(1.0, 0.9, 0.96), w.w * 0.65) * (0.75 + 0.55 * beat + 0.4 * w.w + 0.6 * uMouseOn * smoothstep(1.8, 0.0, dist));
     }`, {
       uSize: { value: 60 }, uForm: { value: 0 },
-      uFrom: { value: new THREE.Vector3(1, 0, 0) }, uTo: { value: new THREE.Vector3(1, 0, 0) }, uMix: { value: 0 },
+      uFrom: { value: new THREE.Vector4(1, 0, 0, 0) }, uTo: { value: new THREE.Vector4(1, 0, 0, 0) }, uMix: { value: 0 },
       uMouse: { value: new THREE.Vector3(99, 99, 99) }, uMouseOn: { value: 0 },
     });
   const pts = new THREE.Points(geo, mat);
@@ -451,20 +530,23 @@ fontsReady.then(() => {
   const geo = heart.geometry;
   geo.attributes.aT1.array.set(textPoints(HEART_TEXTS[0], HEART_N)); geo.attributes.aT1.needsUpdate = true;
   geo.attributes.aT2.array.set(textPoints(HEART_TEXTS[1], HEART_N)); geo.attributes.aT2.needsUpdate = true;
+  geo.attributes.aT3.array.set(textPoints(FINALE_TEXT, HEART_N)); geo.attributes.aT3.needsUpdate = true;
 });
-const SHAPES = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
+const SHAPES = [new THREE.Vector4(1, 0, 0, 0), new THREE.Vector4(0, 1, 0, 0), new THREE.Vector4(0, 0, 1, 0), new THREE.Vector4(0, 0, 0, 1)];
+const FINALE_SHAPE = 3;
 let shape = 0, morphing = false, textness = 0;
-async function morphHeart() {
-  if (morphing) return;
+async function morphTo(next) {
+  if (morphing || next === shape) return;
   morphing = true;
   const u = heart.material.uniforms;
-  const next = (shape + 1) % SHAPES.length;
   u.uFrom.value.copy(SHAPES[shape]); u.uTo.value.copy(SHAPES[next]); u.uMix.value = 0;
   burst(heart.getWorldPosition(new THREE.Vector3()), 60, 2.5);
+  sfx.chime([0, 4, 7, 12]);
   await tween(1.8, (k, raw) => { u.uMix.value = raw; });
   shape = next;
   morphing = false;
 }
+const morphHeart = () => morphTo((shape + 1) % 3);
 
 /* ---------- шлейф за курсором и вспышки ---------- */
 const SPARK_N = 700;
@@ -541,6 +623,7 @@ let supernovaBusy = false;
 async function supernova() {
   if (supernovaBusy) return;
   supernovaBusy = true;
+  sfx.chime([0, 7, 12, 19, 24], 60, 0.1);
   const u = galaxy.material.uniforms;
   burst(new THREE.Vector3(0, 0.3, 0), 160, 6);
   await tween(2.6, (k, raw) => {
@@ -551,6 +634,118 @@ async function supernova() {
   u.uWaveAmp.value = 0;
   supernovaBusy = false;
 }
+
+/* ---------- музыка: нежная мелодия, которая сочиняется в браузере ---------- */
+const music = (() => {
+  let ctx = null, master, wet, dry, playing = false, timer = null, nextTime = 0, step = 0, audioEl = null, finaleMode = false;
+  const BEAT = 0.72;
+  // Fmaj7 – Em7 – Dm7 – Cmaj7: мягкий романтичный спуск
+  const CHORDS = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]];
+  const PATTERNS = [[3, -1, 2, 1, 3, -1, 0, 2], [1, 2, 3, -1, 2, 1, -1, 0], [3, 2, -1, 1, 0, -1, 1, 2], [2, -1, 3, 2, 1, -1, 0, -1]];
+  const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  function init() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor();
+    master.connect(comp); comp.connect(ctx.destination);
+    const conv = ctx.createConvolver();
+    const len = ctx.sampleRate * 3.2, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+    conv.buffer = ir;
+    wet = ctx.createGain(); wet.gain.value = 0.55; dry = ctx.createGain(); dry.gain.value = 0.7;
+    wet.connect(conv); conv.connect(master); dry.connect(master);
+  }
+  const out = (node) => { node.connect(dry); node.connect(wet); };
+  function bell(t, midi, vel = 0.1, dur = 1.6) {
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = mtof(midi);
+    o2.type = 'sine'; o2.frequency.value = mtof(midi) * 2.01; g2.gain.value = 0.22;
+    o.connect(g); o2.connect(g2); g2.connect(g);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+    out(g); o.start(t); o2.start(t); o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
+  }
+  function pad(t, notes, dur) {
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = finaleMode ? 1500 : 900; f.Q.value = 0.4;
+    const g = ctx.createGain(), lvl = finaleMode ? 0.06 : 0.045;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl, t + 1.4); g.gain.setValueAtTime(lvl, t + dur - 0.6); g.gain.linearRampToValueAtTime(0, t + dur + 1.2);
+    f.connect(g); out(g);
+    notes.forEach((m, i) => { for (const det of [-6, 6]) {
+      const o = ctx.createOscillator(); o.type = i % 2 ? 'triangle' : 'sine'; o.frequency.value = mtof(m); o.detune.value = det;
+      o.connect(f); o.start(t); o.stop(t + dur + 1.3);
+    } });
+    const b = ctx.createOscillator(), bg = ctx.createGain();
+    b.type = 'sine'; b.frequency.value = mtof(notes[0] - 12);
+    bg.gain.setValueAtTime(0, t); bg.gain.linearRampToValueAtTime(0.09, t + 0.3); bg.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    b.connect(bg); bg.connect(dry); b.start(t); b.stop(t + dur + 0.1);
+  }
+  function schedule() {
+    while (nextTime < ctx.currentTime + 1.6) {
+      const bar = Math.floor(step / 8), chord = CHORDS[bar % CHORDS.length], pos = step % 8;
+      if (pos === 0) pad(nextTime, chord, BEAT * 4);
+      const idx = PATTERNS[bar % PATTERNS.length][pos];
+      if (idx >= 0) {
+        const lift = finaleMode && pos % 4 === 0 ? 24 : 12;
+        bell(nextTime, chord[idx] + lift, 0.075 + Math.random() * 0.03);
+        if (Math.random() < (finaleMode ? 0.25 : 0.07)) bell(nextTime + BEAT / 4, chord[(idx + 2) % 4] + 24, 0.035, 1.2);
+      }
+      step++; nextTime += BEAT / 2;
+    }
+  }
+  function ramp(v, sec) {
+    const t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(v, t + sec);
+  }
+  return {
+    get on() { return playing; },
+    start() {
+      init(); ctx.resume();
+      if (playing) return;
+      playing = true;
+      if (MUSIC_URL) {
+        if (!audioEl) { audioEl = new Audio(MUSIC_URL); audioEl.loop = true; ctx.createMediaElementSource(audioEl).connect(master); }
+        audioEl.play().catch(() => {});
+      } else {
+        nextTime = ctx.currentTime + 0.1; schedule();
+        clearInterval(timer); timer = setInterval(schedule, 200);
+      }
+      ramp(finaleMode ? 1 : 0.8, 1.5);
+    },
+    stop() {
+      if (!playing) return;
+      playing = false;
+      ramp(0, 0.8);
+      setTimeout(() => { if (playing) return; clearInterval(timer); audioEl?.pause(); }, 900);
+    },
+    finale(on) { finaleMode = on; if (playing) ramp(on ? 1 : 0.8, 2); },
+    chime(intervals, base = 84, vel = 0.07) {
+      if (!playing) return;
+      const t = ctx.currentTime;
+      intervals.forEach((iv, i) => bell(t + i * 0.08, base + iv, vel, 1.5));
+    },
+  };
+})();
+const sfx = { chime: (iv, base, vel) => music.chime(iv, base, vel) };
+
+const musicBtn = document.getElementById('music');
+let musicWanted = false;
+try { musicWanted = localStorage.getItem('galaxy.music') === '1'; } catch (e) {}
+function paintMusic() {
+  musicBtn.textContent = musicWanted ? '🎵' : '🔇';
+  musicBtn.classList.toggle('on', musicWanted);
+  musicBtn.setAttribute('aria-pressed', String(musicWanted));
+  musicBtn.setAttribute('aria-label', musicWanted ? 'Выключить музыку' : 'Включить музыку');
+}
+function setMusic(on) {
+  musicWanted = on;
+  try { localStorage.setItem('galaxy.music', on ? '1' : '0'); } catch (e) {}
+  on ? music.start() : music.stop();
+  paintMusic();
+}
+musicBtn.addEventListener('click', () => setMusic(!musicWanted));
+paintMusic();
+// браузеры не дают играть звук без касания: если музыку включали раньше — стартуем на первом касании
+if (musicWanted) addEventListener('pointerdown', (e) => { if (e.target !== musicBtn && musicWanted) music.start(); }, { once: true });
 
 /* ---------- планеты-альбомы ---------- */
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
@@ -618,7 +813,7 @@ const planets = ALBUMS.map((album, i) => {
   label.addEventListener('click', () => openAlbum(i));
   document.getElementById('labels').appendChild(label);
 
-  return { album, group, body, atmo, hit, label, size, radius, angle: i / ALBUMS.length * Math.PI * 2 + 0.6, speed: 0.11 / (1 + i * 0.25), frozen: false };
+  return { album, group, body, atmo, hit, label, orbit, size, radius, angle: i / ALBUMS.length * Math.PI * 2 + 0.6, speed: 0.11 / (1 + i * 0.25), frozen: false, override: null, overrideK: 0 };
 });
 const idleTargets = [...planets.map((p) => p.hit), heart.userData.hit, coreHit];
 
@@ -765,6 +960,8 @@ async function openAlbum(i) {
   state = 'flying'; current = i;
   const p = planets[i], album = ALBUMS[i];
   p.frozen = true;
+  visited.add(i); saveVisited();
+  sfx.chime([0, 7, 12, 16]);
   controls.enabled = false;
   document.body.classList.add('focus');
   savedView = { pos: camera.position.clone(), target: controls.target.clone() };
@@ -812,7 +1009,90 @@ async function closeAlbum() {
   controls.enabled = true;
   state = 'idle';
   current = -1;
+  renderProgress();
+  if (visited.size === ALBUMS.length && !finaleSeen) { await sleep(700); startFinale(); }
 }
+
+/* ---------- секретный финал ---------- */
+let visited = new Set(), finaleSeen = false;
+try {
+  visited = new Set(JSON.parse(localStorage.getItem('galaxy.visited') || '[]').filter((i) => Number.isInteger(i) && i < ALBUMS.length));
+  finaleSeen = localStorage.getItem('galaxy.finale') === '1';
+} catch (e) {}
+function saveVisited() { try { localStorage.setItem('galaxy.visited', JSON.stringify([...visited])); } catch (e) {} }
+const progressEl = document.getElementById('progress');
+ALBUMS.forEach((a) => { const dot = document.createElement('i'); dot.style.setProperty('--c', a.color); progressEl.appendChild(dot); });
+function renderProgress() {
+  progressEl.querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', visited.has(i)));
+  const done = visited.size === ALBUMS.length;
+  progressEl.classList.toggle('done', done);
+  document.getElementById('p-text').textContent = done ? '💫 Финал' : `Секрет 🤫 ${visited.size}/${ALBUMS.length}`;
+  progressEl.title = done ? 'Нажми, чтобы снова увидеть финал' : 'Открой все планеты — там секрет 🤫';
+  progressEl.setAttribute('role', done ? 'button' : 'status');
+  progressEl.tabIndex = done ? 0 : -1;
+}
+renderProgress();
+progressEl.addEventListener('click', () => { if (visited.size === ALBUMS.length) startFinale(); });
+progressEl.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && visited.size === ALBUMS.length) { e.preventDefault(); startFinale(); } });
+
+const finaleEl = document.getElementById('finale');
+document.getElementById('f-letter').textContent = FINALE_LETTER;
+let fireworks = false, fwTimer = 0;
+
+async function startFinale() {
+  if (state !== 'idle') return;
+  state = 'finale';
+  finaleSeen = true;
+  try { localStorage.setItem('galaxy.finale', '1'); } catch (e) {}
+  controls.enabled = false;
+  document.body.classList.add('finale');
+  savedView = { pos: camera.position.clone(), target: controls.target.clone() };
+  music.finale(true);
+  sfx.chime([0, 4, 7, 11, 14, 19], 72, 0.08);
+  // сердце в верхней части экрана, внизу место для письма
+  const fitDist = Math.max(29, 24 / camera.aspect) / Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / 2;
+  const lift = camera.aspect < 0.8 ? 12 : 6;   // на вертикальном экране письмо занимает больше места
+  flyCamera(new THREE.Vector3(0, BIG_HEART.y - 1, fitDist), new THREE.Vector3(0, BIG_HEART.y - lift, 0), 3.4);
+  // планеты занимают места на контуре сердца, симметрично от нижнего кончика
+  const n = planets.length, spread = n > 1 ? (Math.PI * 2 - 1.6) / (n - 1) : 0;
+  planets.forEach((p, i) => {
+    const t = Math.PI + (i - (n - 1) / 2) * spread;
+    p.override = new THREE.Vector3(hx(t) * BIG_HEART.s * 1.1, hy(t) * BIG_HEART.s * 1.1 + BIG_HEART.y, 1.5);
+  });
+  const u = galaxy.material.uniforms.uFinale;
+  const hFrom = heart.position.clone(), hTo = new THREE.Vector3(0, BIG_HEART.y + 0.4, 2.5);
+  tween(4, (k) => { u.value = k; planets.forEach((p) => { p.overrideK = k; p.orbit.material.opacity = 0.13 * (1 - k); }); heart.position.lerpVectors(hFrom, hTo, k); });
+  setTimeout(() => morphTo(FINALE_SHAPE), reduced ? 0 : 1500);
+  await sleep(reduced ? 500 : 4300);
+  if (state !== 'finale') return;
+  fireworks = !reduced;
+  finaleEl.hidden = false;
+  requestAnimationFrame(() => finaleEl.classList.add('show'));
+  document.getElementById('f-back').focus({ preventScroll: true });
+}
+
+async function exitFinale(replay = false) {
+  if (state !== 'finale') return;
+  state = 'flying';
+  fireworks = false;
+  finaleEl.classList.remove('show');
+  await sleep(500);
+  finaleEl.hidden = true;
+  music.finale(false);
+  while (morphing) await sleep(100);
+  morphTo(0);
+  const u = galaxy.material.uniforms.uFinale;
+  const hFrom = heart.position.clone(), hTo = new THREE.Vector3(0, 6.2, 0);
+  tween(3, (k) => { u.value = 1 - k; planets.forEach((p) => { p.overrideK = 1 - k; p.orbit.material.opacity = 0.13 * k; }); heart.position.lerpVectors(hFrom, hTo, k); })
+    .then(() => planets.forEach((p) => { p.override = null; }));
+  await flyCamera(savedView.pos, savedView.target, 3);
+  document.body.classList.remove('finale');
+  controls.enabled = true;
+  state = 'idle';
+  if (replay) { await sleep(300); startFinale(); }
+}
+document.getElementById('f-back').addEventListener('click', () => exitFinale());
+document.getElementById('f-replay').addEventListener('click', () => exitFinale(true));
 document.getElementById('a-back').addEventListener('click', closeAlbum);
 document.getElementById('a-grid').addEventListener('click', () => { if (state === 'album' && !gridOpen) showGallery(); });
 
@@ -931,6 +1211,8 @@ addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeLightbox();
     else if (e.key === 'ArrowRight') stepLightbox(1);
     else if (e.key === 'ArrowLeft') stepLightbox(-1);
+  } else if (state === 'finale') {
+    if (e.key === 'Escape') exitFinale();
   } else if (gridOpen) {
     if (e.key === 'Escape') hideGallery();
   } else if (state === 'album') {
@@ -1046,6 +1328,7 @@ function frame() {
   for (const p of planets) {
     if (!p.frozen) p.angle += dt * p.speed * (reduced ? 0.3 : 1);
     p.group.position.set(Math.sin(p.angle) * p.radius, Math.sin(p.angle * 2 + p.radius) * 0.35, Math.cos(p.angle) * p.radius);
+    if (p.override) p.group.position.lerp(p.override, p.overrideK);
     p.body.rotation.y += dt * (p.frozen ? 0.6 : 0.18);
     tmp.copy(p.group.position); tmp.y += p.size * 1.55;
     tmp.project(camera);
@@ -1054,6 +1337,15 @@ function frame() {
     if (visible) p.label.style.transform = `translate(-50%,-100%) translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px,${(-tmp.y * 0.5 + 0.5) * innerHeight}px)`;
   }
 
+  if (fireworks) {
+    fwTimer -= dt;
+    if (fwTimer <= 0) {
+      fwTimer = 0.35 + Math.random() * 0.55;
+      const t = Math.random() * Math.PI * 2, r = 1.05 + Math.random() * 0.45;
+      burst(new THREE.Vector3(hx(t) * BIG_HEART.s * r, hy(t) * BIG_HEART.s * r + BIG_HEART.y, Math.random() * 3), 45, 4);
+      if (Math.random() < 0.5) sfx.chime([[0, 4, 7, 12][Math.random() * 4 | 0]], 89, 0.035);
+    }
+  }
   updateSparks(dt);
   updateComets(dt);
   updateCarousel(dt);
