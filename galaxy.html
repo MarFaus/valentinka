@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Галактика любви</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Comfortaa:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#05020c;--ink:#f6e6df;--pink:#ffb3c1;--red:#ff4d6d;--soft:#ffe3e8;--paper:#fffcf7;--paper-ink:#4a352f;--glass:rgba(20,10,35,.55);--line:rgba(255,179,193,.25)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Comfortaa,'Trebuchet MS',sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hand{font-family:Caveat,'Segoe Script',cursive;font-weight:700}
+button{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink);text-decoration:none;font-size:14px;cursor:pointer;transition:background .2s,transform .2s}
+.btn:hover{background:rgba(255,77,109,.25)}
+.btn:active{transform:scale(.96)}
+.btn:focus-visible,.card:focus-visible,.label:focus-visible{outline:2px solid var(--pink);outline-offset:3px}
+
+.hud{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0;pointer-events:none;z-index:5;transition:opacity .5s}
+.hud > *{pointer-events:auto}
+.hint{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);text-align:center;font-size:clamp(20px,5vw,26px);line-height:1.1;color:var(--soft);text-shadow:0 0 18px rgba(255,77,109,.8);pointer-events:none;z-index:5;transition:opacity .6s;animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.55}}
+body.focus .hud,body.focus #hint,body.focus #labels,body.intro #hint,body.intro #labels{opacity:0;pointer-events:none;animation:none}
+body.focus .hud > *{pointer-events:none}
+
+#labels{position:fixed;inset:0;pointer-events:none;z-index:4;transition:opacity .4s}
+.label{position:absolute;left:0;top:0;padding:5px 11px 5px 9px;border-radius:999px;border:1px solid var(--line);background:rgba(15,6,28,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;white-space:nowrap;cursor:pointer;pointer-events:auto;transition:background .2s,border-color .2s;will-change:transform}
+.label:hover,.label.hot{background:rgba(255,77,109,.35);border-color:var(--pink)}
+
+/* интерфейс открытого альбома */
+#album-hud{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .5s}
+body.album #album-hud{opacity:1}
+body.album.grid #album-hud{opacity:0}
+body.album #album-hud .btn{pointer-events:auto}
+.a-top{display:flex;justify-content:space-between;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 0}
+.a-title{position:absolute;left:0;right:0;top:calc(66px + env(safe-area-inset-top,0px));margin:0;text-align:center;font-size:clamp(34px,7vw,56px);line-height:1;color:var(--soft);text-shadow:0 0 22px rgba(255,77,109,.75)}
+.a-hint{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));text-align:center;font-size:clamp(19px,4.6vw,24px);color:var(--soft);opacity:.85}
+
+/* галерея сеткой */
+#gallery{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;background:rgba(5,2,12,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .45s;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+#gallery.show{opacity:1}
+#gallery[hidden]{display:none}
+.g-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;max-width:1100px;width:100%;margin:0 auto 14px}
+.g-title{margin:0;font-size:clamp(30px,6vw,46px);line-height:1;color:var(--soft);text-shadow:0 0 22px rgba(255,77,109,.7)}
+.g-sub{margin:4px 0 0;font-size:13px;opacity:.75}
+.g-grid{flex:1;overflow-y:auto;overscroll-behavior:contain;max-width:1100px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:22px;padding:10px 6px 30px;align-content:start}
+.card{all:unset;box-sizing:border-box;display:block;cursor:pointer;background:var(--paper);color:var(--paper-ink);padding:8px 8px 10px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(255,77,109,.18);transform:rotate(var(--r,0deg));transition:transform .25s}
+.card:hover{transform:rotate(0deg) scale(1.04)}
+.card img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:3px;background:#eee}
+.card p{margin:7px 3px 0;font-size:20px;line-height:1.05;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* просмотр фото */
+#lightbox{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(5,2,12,.9);padding:16px;opacity:0;transition:opacity .3s;touch-action:pan-y}
+#lightbox.show{opacity:1}
+#lightbox[hidden]{display:none}
+#lb-img{max-width:min(92vw,720px);max-height:66vh;object-fit:contain;background:var(--paper);padding:10px;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(255,77,109,.25);transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+#lb-wish{margin:0;max-width:560px;text-align:center;font-size:clamp(24px,4.5vw,32px);line-height:1.15;color:var(--soft);text-shadow:0 0 16px rgba(255,77,109,.6)}
+#lb-count{font-size:12px;opacity:.6}
+.lb-nav{position:fixed;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;padding:0;justify-content:center;font-size:20px}
+.lb-prev{left:12px}.lb-next{right:12px}
+.lb-close{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px}
+@media (max-width:600px){.lb-nav{top:auto;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:none}.g-grid{grid-template-columns:repeat(2,1fr);gap:14px}.card p{font-size:18px}}
+
+#fail{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;font-size:16px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){.hint{animation:none}}
+</style>
+</head>
+<body class="intro">
+<canvas id="c" aria-label="Галактика с планетами-альбомами"></canvas>
+
+<div class="hud">
+  <a class="btn" href="./">← Валентинка</a>
+  <button class="btn" id="fs" type="button" aria-label="Во весь экран">⛶</button>
+</div>
+<div id="labels"></div>
+<div class="hint hand" id="hint">Нажимай на планеты, сердце и звезду в центре ✨</div>
+
+<div id="album-hud">
+  <div class="a-top">
+    <button class="btn" id="a-back" type="button">← К галактике</button>
+    <button class="btn" id="a-grid" type="button">▦ Все фото</button>
+  </div>
+  <h2 class="a-title hand" id="a-title"></h2>
+  <div class="a-hint hand">Крути карусель · нажми на фото</div>
+</div>
+
+<section id="gallery" hidden aria-modal="true" role="dialog" aria-labelledby="g-title">
+  <div class="g-head">
+    <button class="btn" id="g-back" type="button">← К карусели</button>
+    <div>
+      <h2 class="g-title hand" id="g-title"></h2>
+      <p class="g-sub" id="g-sub"></p>
+    </div>
+  </div>
+  <div class="g-grid" id="g-grid"></div>
+</section>
+
+<div id="lightbox" hidden role="dialog" aria-modal="true">
+  <button class="btn lb-close" id="lb-close" type="button" aria-label="Закрыть">✕</button>
+  <button class="btn lb-nav lb-prev" id="lb-prev" type="button" aria-label="Предыдущее фото">‹</button>
+  <img id="lb-img" alt="">
+  <p class="hand" id="lb-wish"></p>
+  <div id="lb-count"></div>
+  <button class="btn lb-nav lb-next" id="lb-next" type="button" aria-label="Следующее фото">›</button>
+</div>
+
+<div id="fail">Этому браузеру не хватает WebGL, чтобы показать галактику 😿<a class="btn" href="./" style="margin-top:14px">← Вернуться к валентинке</a></div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ============================================================
+   НАСТРОЙКИ
+   Фото: впиши путь в src — { src: 'photos/start/1.webp', wish: '...' }
+   src: null — рисуется заглушка.
+   ============================================================ */
+const HEART_TEXTS = [['Я тебя', 'люблю'], ['Ты моя', 'вселенная']];
+const ALBUMS = [
+  { title: 'Как всё началось', emoji: '💌', color: '#ff7aa2', photos: [
+    { src: null, wish: 'Тот самый день, с которого всё началось' },
+    { src: null, wish: 'Я до сих пор помню, как волновался перед этой встречей' },
+    { src: null, wish: 'Пусть у нас будет ещё тысяча таких же первых раз' },
+    { src: null, wish: 'Твоя улыбка здесь — моя любимая' },
+    { src: null, wish: 'Здесь будет пожелание к фото №5' },
+    { src: null, wish: 'Здесь будет пожелание к фото №6' },
+  ]},
+  { title: 'Наши прогулки', emoji: '🌙', color: '#9b87ff', photos: [
+    { src: null, wish: 'Гулять с тобой можно бесконечно, даже под дождём' },
+    { src: null, wish: 'Желаю, чтобы каждый вечер был таким же тёплым' },
+    { src: null, wish: 'Здесь будет пожелание к фото №3' },
+    { src: null, wish: 'Здесь будет пожелание к фото №4' },
+    { src: null, wish: 'Здесь будет пожелание к фото №5' },
+  ]},
+  { title: 'Котики', emoji: '🐱', color: '#ffb35c', photos: [
+    { src: null, wish: 'Мур-мур! Котики одобряют нашу любовь' },
+    { src: null, wish: 'Ты милее любого котика (только им не говори)' },
+    { src: null, wish: 'Здесь будет пожелание к фото №3' },
+    { src: null, wish: 'Здесь будет пожелание к фото №4' },
+    { src: null, wish: 'Здесь будет пожелание к фото №5' },
+    { src: null, wish: 'Здесь будет пожелание к фото №6' },
+    { src: null, wish: 'Здесь будет пожелание к фото №7' },
+  ]},
+  { title: 'Поездки', emoji: '✈️', color: '#4cc9f0', photos: [
+    { src: null, wish: 'Хочу объехать с тобой весь мир' },
+    { src: null, wish: 'Лучшее путешествие — то, где рядом ты' },
+    { src: null, wish: 'Здесь будет пожелание к фото №3' },
+    { src: null, wish: 'Здесь будет пожелание к фото №4' },
+  ]},
+  { title: 'Просто мы', emoji: '💞', color: '#ff4d6d', photos: [
+    { src: null, wish: 'Я тебя очень люблю. Просто так, без повода' },
+    { src: null, wish: 'Желаю тебе всегда так же счастливо смеяться' },
+    { src: null, wish: 'Здесь будет пожелание к фото №3' },
+    { src: null, wish: 'Здесь будет пожелание к фото №4' },
+    { src: null, wish: 'Здесь будет пожелание к фото №5' },
+    { src: null, wish: 'Здесь будет пожелание к фото №6' },
+  ]},
+];
+
+/* ---------- картинки ---------- */
+const placeholderCache = new Map();
+function placeholder(album, i) {
+  const key = album.title + i;
+  if (placeholderCache.has(key)) return placeholderCache.get(key);
+  const c = document.createElement('canvas'); c.width = 480; c.height = 600;
+  const g = c.getContext('2d');
+  const col = new THREE.Color(album.color);
+  const grd = g.createLinearGradient(0, 0, 480, 600);
+  grd.addColorStop(0, '#' + col.getHexString()); grd.addColorStop(1, '#' + col.clone().multiplyScalar(0.35).getHexString());
+  g.fillStyle = grd; g.fillRect(0, 0, 480, 600);
+  for (let k = 0; k < 14; k++) {
+    g.fillStyle = `rgba(255,255,255,${0.04 + Math.random() * 0.08})`;
+    g.beginPath(); g.arc(Math.random() * 480, Math.random() * 600, 20 + Math.random() * 90, 0, Math.PI * 2); g.fill();
+  }
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = '170px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  g.fillText(album.emoji, 240, 260);
+  g.fillStyle = 'rgba(255,255,255,.92)'; g.font = '700 46px Comfortaa, sans-serif';
+  g.fillText('Фото ' + (i + 1), 240, 440);
+  g.font = '500 24px Comfortaa, sans-serif'; g.fillStyle = 'rgba(255,255,255,.65)';
+  g.fillText('сюда встанет ваше фото', 240, 495);
+  const url = c.toDataURL('image/jpeg', 0.85);
+  placeholderCache.set(key, url);
+  return url;
+}
+const photoSrc = (album, i) => album.photos[i].src || placeholder(album, i);
+const loadImg = (src) => new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+const fontsReady = Promise.all([
+  document.fonts.load('700 40px Caveat'), document.fonts.load('700 150px Comfortaa'),
+]).catch(() => {});
+
+function drawCover(g, im, x, y, w, h) {
+  const s = Math.max(w / im.width, h / im.height);
+  g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  g.drawImage(im, x + w / 2 - im.width * s / 2, y + h / 2 - im.height * s / 2, im.width * s, im.height * s);
+  g.restore();
+}
+
+/* ---------- WebGL ---------- */
+const canvas = document.getElementById('c');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+} catch (e) {
+  document.getElementById('fail').style.display = 'flex';
+  throw e;
+}
+const isMobile = matchMedia('(pointer:coarse)').matches || innerWidth < 700;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PR = Math.min(devicePixelRatio, isMobile ? 1.5 : 2);
+renderer.setPixelRatio(PR);
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x05020c);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05020c);
+const cardScene = new THREE.Scene();   // фото рисуются поверх, без свечения, чтобы были чёткими
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 400);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.06;
+controls.enablePan = false; controls.minDistance = 8; controls.maxDistance = 48;
+controls.maxPolarAngle = Math.PI * 0.47;
+controls.autoRotate = !reduced; controls.autoRotateSpeed = 0.35;
+controls.enabled = false;
+
+const composer = new EffectComposer(renderer);
+composer.setPixelRatio(PR);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.75, 0.32, 0.3);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ---------- частицы ---------- */
+const pointsFrag = /* glsl */`
+  varying vec3 vColor;
+  void main(){
+    float d = length(gl_PointCoord - 0.5);
+    float s = pow(1.0 - smoothstep(0.0, 0.5, d), 2.4);
+    if (s < 0.01) discard;
+    gl_FragColor = vec4(vColor * s, 1.0);
+  }`;
+const spinVert = /* glsl */`
+  uniform float uTime; uniform float uSize; uniform float uPR; uniform float uSpin;
+  uniform float uWave; uniform float uWaveAmp;
+  attribute float aScale; attribute vec3 aColor;
+  varying vec3 vColor;
+  void main(){
+    vec3 p = position;
+    float d = length(p.xz);
+    float a = atan(p.x, p.z) + uTime * uSpin * (0.06 + 0.05 / (d + 3.0));
+    float w = uWaveAmp * exp(-pow((d - uWave) * 0.9, 2.0));
+    float nd = d * (1.0 + 0.16 * w);
+    p.x = sin(a) * nd; p.z = cos(a) * nd; p.y += w * 0.7 * sin(d * 2.5 + uTime * 4.0);
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = min(uSize * aScale * uPR / -mv.z * (1.0 + w), 9.0 * uPR);
+    vColor = aColor * (1.0 + 2.2 * w);
+  }`;
+function pointsMaterial(vert, uniforms) {
+  return new THREE.ShaderMaterial({
+    vertexShader: vert, fragmentShader: pointsFrag,
+    uniforms: { uTime: { value: 0 }, uPR: { value: PR }, ...uniforms },
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  });
+}
+function pointsGeo(attrs) {
+  const geo = new THREE.BufferGeometry();
+  for (const [name, arr, size] of attrs) geo.setAttribute(name, new THREE.BufferAttribute(arr, size));
+  return geo;
+}
+
+// галактика
+const galaxy = (() => {
+  const N = isMobile ? 32000 : 75000, R = 16, ARMS = 4;
+  const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), sc = new Float32Array(N);
+  const inner = new THREE.Color('#ffb48a'), mid = new THREE.Color('#ff4f9a'), outer = new THREE.Color('#5a3dff');
+  const c = new THREE.Color();
+  for (let i = 0; i < N; i++) {
+    const r = 0.5 + Math.pow(Math.random(), 1.25) * R;
+    const branch = (i % ARMS) / ARMS * Math.PI * 2;
+    const spin = r * 0.55;
+    const rnd = () => Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * (0.3 + r * 0.2);
+    pos[i * 3] = Math.sin(branch + spin) * r + rnd();
+    pos[i * 3 + 1] = rnd() * 0.3 * (1.3 - r / R);
+    pos[i * 3 + 2] = Math.cos(branch + spin) * r + rnd();
+    const t = r / R;
+    if (t < 0.3) c.copy(inner).lerp(mid, t / 0.3); else c.copy(mid).lerp(outer, (t - 0.3) / 0.7);
+    const b = (0.3 + Math.random() * 0.45) * (0.55 + 0.45 * t);
+    col[i * 3] = c.r * b; col[i * 3 + 1] = c.g * b; col[i * 3 + 2] = c.b * b;
+    sc[i] = 0.4 + Math.random() * 1.1;
+  }
+  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1]]),
+    pointsMaterial(spinVert, { uSize: { value: 58 }, uSpin: { value: reduced ? 0.3 : 1 }, uWave: { value: -10 }, uWaveAmp: { value: 0 } }));
+  scene.add(pts);
+  return pts;
+})();
+
+// звёзды фона
+const stars = (() => {
+  const N = 2500;
+  const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), sc = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const v = new THREE.Vector3().randomDirection().multiplyScalar(70 + Math.random() * 110);
+    pos.set([v.x, v.y, v.z], i * 3);
+    const w = 0.35 + Math.random() * 0.45;
+    col.set([w, w * (0.85 + Math.random() * 0.15), w], i * 3);
+    sc[i] = 0.6 + Math.random() * 1.6;
+  }
+  const pts = new THREE.Points(pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1]]),
+    pointsMaterial(spinVert, { uSize: { value: 170 }, uSpin: { value: 0 }, uWave: { value: -10 }, uWaveAmp: { value: 0 } }));
+  scene.add(pts);
+  return pts;
+})();
+
+// ядро галактики (кликабельное — сверхновая)
+const core = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, 'rgba(255,236,210,.95)'); grd.addColorStop(0.2, 'rgba(255,160,120,.45)'); grd.addColorStop(1, 'rgba(255,80,140,0)');
+  g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+  sp.scale.set(3.6, 3.6, 1);
+  scene.add(sp);
+  return sp;
+})();
+const coreHit = new THREE.Mesh(new THREE.SphereGeometry(1.5, 12, 8), new THREE.MeshBasicMaterial({ visible: false }));
+coreHit.userData.kind = 'core';
+scene.add(coreHit);
+
+/* ---------- сердце, которое превращается в надписи ---------- */
+const HEART_N = isMobile ? 6000 : 11000;
+const heart = (() => {
+  const N = HEART_N, S = 0.17;
+  const pos = new Float32Array(N * 3), start = new Float32Array(N * 3), col = new Float32Array(N * 3), sc = new Float32Array(N), rnd = new Float32Array(N);
+  const a = new THREE.Color('#ff2fa0'), b = new THREE.Color('#ffa3e0'), c = new THREE.Color();
+  const hx = (t) => 16 * Math.pow(Math.sin(t), 3);
+  const hy = (t) => 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+  const poly = Array.from({ length: 200 }, (_, k) => [hx(k / 200 * Math.PI * 2), hy(k / 200 * Math.PI * 2)]);
+  const inside = (x, y) => {
+    let ok = false;
+    for (let p = 0, q = poly.length - 1; p < poly.length; q = p++) {
+      const [xi, yi] = poly[p], [xj, yj] = poly[q];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) ok = !ok;
+    }
+    return ok;
+  };
+  for (let i = 0; i < N; i++) {
+    const edge = Math.random() < 0.6;
+    let x, y, depth;
+    if (edge) {
+      const t = Math.random() * Math.PI * 2, f = 1 - Math.random() * 0.06;
+      x = hx(t) * f; y = hy(t) * f; depth = 0.25;
+    } else {
+      do { x = (Math.random() * 2 - 1) * 16.5; y = Math.random() * 30 - 17.5; } while (!inside(x, y));
+      depth = 1;
+    }
+    pos[i * 3] = x * S; pos[i * 3 + 1] = y * S + 0.4; pos[i * 3 + 2] = (Math.random() - 0.5) * 1.1 * depth;
+    const v = new THREE.Vector3().randomDirection().multiplyScalar(10 + Math.random() * 25);
+    start.set([v.x, v.y, v.z], i * 3);
+    c.copy(a).lerp(b, edge ? Math.random() * 0.5 : 0.3 + Math.random() * 0.7);
+    col.set([c.r, c.g, c.b], i * 3);
+    sc[i] = edge ? 0.7 + Math.random() * 0.9 : 0.4 + Math.random() * 0.7;
+    rnd[i] = Math.random();
+  }
+  const geo = pointsGeo([['position', pos, 3], ['aStart', start, 3], ['aColor', col, 3], ['aScale', sc, 1], ['aRand', rnd, 1],
+    ['aT1', pos.slice(), 3], ['aT2', pos.slice(), 3]]);
+  const mat = pointsMaterial(/* glsl */`
+    uniform float uTime; uniform float uSize; uniform float uPR; uniform float uForm;
+    uniform vec3 uFrom; uniform vec3 uTo; uniform float uMix;
+    uniform vec3 uMouse; uniform float uMouseOn;
+    attribute vec3 aStart; attribute vec3 aColor; attribute float aScale; attribute float aRand;
+    attribute vec3 aT1; attribute vec3 aT2;
+    varying vec3 vColor;
+    void main(){
+      // смена формы: сердце -> надпись 1 -> надпись 2, у каждой частицы своя задержка
+      float m = clamp(uMix * 1.5 - aRand * 0.5, 0.0, 1.0);
+      m = m * m * (3.0 - 2.0 * m);
+      vec3 w = mix(uFrom, uTo, m);
+      vec3 shape = position * w.x + aT1 * w.y + aT2 * w.z;
+      shape += normalize(aStart) * sin(m * 3.14159) * (1.2 + aRand * 1.8);
+      // сборка из пыли на старте
+      float k = clamp(uForm * 1.6 - aRand * 0.6, 0.0, 1.0);
+      k = k * k * (3.0 - 2.0 * k);
+      vec3 p = mix(aStart, shape, k);
+      float heartness = w.x;
+      float beat = pow(abs(sin(uTime * 1.9)), 6.0) * heartness;
+      p.xy *= 1.0 + 0.07 * beat * k;
+      p += 0.045 * vec3(sin(uTime * 2.0 + aRand * 40.0), cos(uTime * 1.7 + aRand * 30.0), sin(uTime * 1.3 + aRand * 20.0));
+      // частицы разбегаются от курсора
+      vec3 dm = p - uMouse;
+      float dist = length(dm);
+      p += normalize(dm + 1e-4) * uMouseOn * 1.1 * smoothstep(1.8, 0.0, dist);
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = uSize * aScale * uPR / -mv.z * (1.0 + 0.35 * beat);
+      vColor = aColor * (0.75 + 0.55 * beat + 0.6 * uMouseOn * smoothstep(1.8, 0.0, dist));
+    }`, {
+      uSize: { value: 60 }, uForm: { value: 0 },
+      uFrom: { value: new THREE.Vector3(1, 0, 0) }, uTo: { value: new THREE.Vector3(1, 0, 0) }, uMix: { value: 0 },
+      uMouse: { value: new THREE.Vector3(99, 99, 99) }, uMouseOn: { value: 0 },
+    });
+  const pts = new THREE.Points(geo, mat);
+  pts.position.y = 6.2;
+  scene.add(pts);
+  const hit = new THREE.Mesh(new THREE.PlaneGeometry(6.5, 6), new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide }));
+  hit.userData.kind = 'heart';
+  pts.add(hit);
+  pts.userData.hit = hit;
+  return pts;
+})();
+
+function textPoints(lines, N) {
+  const W = 1024, H = 512;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d', { willReadFrequently: true });
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  let size = 160;
+  g.font = `700 ${size}px Comfortaa, sans-serif`;
+  const widest = Math.max(...lines.map((l) => g.measureText(l).width));
+  if (widest > W * 0.94) { size = Math.floor(size * W * 0.94 / widest); g.font = `700 ${size}px Comfortaa, sans-serif`; }
+  const lh = size * 1.12;
+  lines.forEach((l, i) => g.fillText(l, W / 2, H / 2 + (i - (lines.length - 1) / 2) * lh));
+  const data = g.getImageData(0, 0, W, H).data;
+  const pts = [];
+  for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (data[(y * W + x) * 4 + 3] > 128) pts.push(x, y);
+  const out = new Float32Array(N * 3), scale = 10 / W;
+  for (let i = 0; i < N; i++) {
+    const j = (Math.random() * (pts.length / 2) | 0) * 2;
+    out[i * 3] = (pts[j] - W / 2 + Math.random() * 2) * scale;
+    out[i * 3 + 1] = -(pts[j + 1] - H / 2 + Math.random() * 2) * scale + 0.3;
+    out[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+  }
+  return out;
+}
+fontsReady.then(() => {
+  const geo = heart.geometry;
+  geo.attributes.aT1.array.set(textPoints(HEART_TEXTS[0], HEART_N)); geo.attributes.aT1.needsUpdate = true;
+  geo.attributes.aT2.array.set(textPoints(HEART_TEXTS[1], HEART_N)); geo.attributes.aT2.needsUpdate = true;
+});
+const SHAPES = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
+let shape = 0, morphing = false, textness = 0;
+async function morphHeart() {
+  if (morphing) return;
+  morphing = true;
+  const u = heart.material.uniforms;
+  const next = (shape + 1) % SHAPES.length;
+  u.uFrom.value.copy(SHAPES[shape]); u.uTo.value.copy(SHAPES[next]); u.uMix.value = 0;
+  burst(heart.getWorldPosition(new THREE.Vector3()), 60, 2.5);
+  await tween(1.8, (k, raw) => { u.uMix.value = raw; });
+  shape = next;
+  morphing = false;
+}
+
+/* ---------- шлейф за курсором и вспышки ---------- */
+const SPARK_N = 700;
+const sparks = (() => {
+  const pos = new Float32Array(SPARK_N * 3), col = new Float32Array(SPARK_N * 3), sc = new Float32Array(SPARK_N);
+  const geo = pointsGeo([['position', pos, 3], ['aColor', col, 3], ['aScale', sc, 1]]);
+  const pts = new THREE.Points(geo, pointsMaterial(/* glsl */`
+    uniform float uSize; uniform float uPR;
+    attribute float aScale; attribute vec3 aColor; varying vec3 vColor;
+    void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); gl_Position = projectionMatrix * mv;
+      gl_PointSize = uSize * aScale * uPR / -mv.z; vColor = aColor * aScale; }`, { uSize: { value: 70 } }));
+  pts.frustumCulled = false;
+  scene.add(pts);
+  return { pts, vel: new Float32Array(SPARK_N * 3), life: new Float32Array(SPARK_N), base: new Float32Array(SPARK_N * 3), idx: 0 };
+})();
+const sparkColors = ['#ffd6e0', '#ff7ab6', '#ffcf6b', '#c9a2ff'].map((h) => new THREE.Color(h));
+function emit(p, speed = 0.4, up = 0.25) {
+  const i = sparks.idx++ % SPARK_N;
+  const pos = sparks.pts.geometry.attributes.position.array;
+  pos[i * 3] = p.x; pos[i * 3 + 1] = p.y; pos[i * 3 + 2] = p.z;
+  const v = new THREE.Vector3().randomDirection().multiplyScalar(speed * (0.3 + Math.random()));
+  sparks.vel.set([v.x, v.y + up, v.z], i * 3);
+  sparks.life[i] = 1;
+  const c = sparkColors[Math.random() * sparkColors.length | 0];
+  sparks.base.set([c.r, c.g, c.b], i * 3);
+}
+function burst(p, n, speed) { for (let i = 0; i < n; i++) emit(p, speed, 0); }
+function updateSparks(dt) {
+  const g = sparks.pts.geometry, pos = g.attributes.position.array, col = g.attributes.aColor.array, sc = g.attributes.aScale.array;
+  for (let i = 0; i < SPARK_N; i++) {
+    if (sparks.life[i] <= 0) { sc[i] = 0; continue; }
+    sparks.life[i] -= dt / 1.3;
+    const l = Math.max(0, sparks.life[i]);
+    pos[i * 3] += sparks.vel[i * 3] * dt; pos[i * 3 + 1] += sparks.vel[i * 3 + 1] * dt; pos[i * 3 + 2] += sparks.vel[i * 3 + 2] * dt;
+    sparks.vel[i * 3] *= 0.97; sparks.vel[i * 3 + 1] *= 0.97; sparks.vel[i * 3 + 2] *= 0.97;
+    sc[i] = l * (0.6 + 0.4 * Math.sin(i + l * 20));
+    col[i * 3] = sparks.base[i * 3]; col[i * 3 + 1] = sparks.base[i * 3 + 1]; col[i * 3 + 2] = sparks.base[i * 3 + 2];
+  }
+  g.attributes.position.needsUpdate = true; g.attributes.aColor.needsUpdate = true; g.attributes.aScale.needsUpdate = true;
+}
+
+/* ---------- кометы ---------- */
+const comets = [];
+let nextComet = 2;
+function spawnComet() {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array([1, 0.92, 0.95, 0, 0, 0]), 3));
+  const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+  line.frustumCulled = false;
+  const head = new THREE.Vector3().randomDirection().multiplyScalar(55);
+  head.y = Math.abs(head.y) * 0.6 + 12;
+  const vel = new THREE.Vector3(Math.random() - 0.5, -(0.25 + Math.random() * 0.3), Math.random() - 0.5).normalize().multiplyScalar(38 + Math.random() * 20);
+  scene.add(line);
+  comets.push({ line, head, vel, age: 0, life: 1 + Math.random() * 0.6 });
+}
+function updateComets(dt) {
+  nextComet -= dt;
+  if (nextComet <= 0 && !reduced) { spawnComet(); nextComet = 2.5 + Math.random() * 4; }
+  for (let i = comets.length - 1; i >= 0; i--) {
+    const c = comets[i];
+    c.age += dt; c.head.addScaledVector(c.vel, dt);
+    const tail = c.head.clone().addScaledVector(c.vel, -0.14 * Math.min(1, c.age * 4));
+    const a = c.line.geometry.attributes.position.array;
+    a.set([c.head.x, c.head.y, c.head.z, tail.x, tail.y, tail.z]);
+    c.line.geometry.attributes.position.needsUpdate = true;
+    c.line.material.opacity = Math.sin(Math.min(1, c.age / c.life) * Math.PI);
+    if (c.age > c.life) { scene.remove(c.line); c.line.geometry.dispose(); c.line.material.dispose(); comets.splice(i, 1); }
+  }
+}
+
+/* ---------- сверхновая ---------- */
+let supernovaBusy = false;
+async function supernova() {
+  if (supernovaBusy) return;
+  supernovaBusy = true;
+  const u = galaxy.material.uniforms;
+  burst(new THREE.Vector3(0, 0.3, 0), 160, 6);
+  await tween(2.6, (k, raw) => {
+    u.uWave.value = raw * 20 - 1;
+    u.uWaveAmp.value = Math.sin(Math.min(1, raw * 3) * Math.PI / 2) * (1 - raw);
+    core.scale.setScalar(3.6 + Math.sin(Math.min(1, raw * 2.2) * Math.PI) * 7);
+  });
+  u.uWaveAmp.value = 0;
+  supernovaBusy = false;
+}
+
+/* ---------- планеты-альбомы ---------- */
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+scene.add(new THREE.PointLight(0xffd2b0, 1.8, 0, 0));
+
+const atmoMat = (color) => new THREE.ShaderMaterial({
+  uniforms: { uColor: { value: new THREE.Color(color) }, uBoost: { value: 0.9 } },
+  vertexShader: `varying vec3 vN; varying vec3 vV;
+    void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
+  fragmentShader: `uniform vec3 uColor; uniform float uBoost; varying vec3 vN; varying vec3 vV;
+    void main(){ float f = pow(1.0 - abs(dot(vN, vV)), 2.8); gl_FragColor = vec4(uColor * f * uBoost, 1.0); }`,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+});
+
+async function planetTexture(album) {
+  const W = 1024, H = 512;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  const col = new THREE.Color(album.color);
+  g.fillStyle = '#' + col.clone().multiplyScalar(0.3).getHexString(); g.fillRect(0, 0, W, H);
+  const imgs = (await Promise.all(album.photos.map((_, i) => loadImg(photoSrc(album, i))))).filter(Boolean);
+  const cols = 8, rows = 4, cw = W / cols, ch = H / rows;
+  let n = 0;
+  for (let r = 0; r < rows; r++) for (let k = 0; k <= cols; k++) {
+    const im = imgs[n++ % imgs.length]; if (!im) continue;
+    g.save();
+    g.translate(k * cw + (r % 2) * cw * 0.5, r * ch + ch / 2);
+    g.rotate((Math.random() - 0.5) * 0.35);
+    const w = cw * 0.92, h = ch * 0.92;
+    g.fillStyle = '#fffcf7'; g.fillRect(-w / 2, -h / 2, w, h);
+    drawCover(g, im, -w / 2 + 4, -h / 2 + 4, w - 8, h - 14);
+    g.restore();
+  }
+  g.globalCompositeOperation = 'multiply';
+  g.fillStyle = '#' + col.clone().lerp(new THREE.Color('#ffffff'), 0.55).getHexString(); g.fillRect(0, 0, W, H);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+const planets = ALBUMS.map((album, i) => {
+  const group = new THREE.Group();
+  const size = 0.75 + (album.photos.length / 10) * 0.35;
+  const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, metalness: 0, emissive: 0xffffff, emissiveIntensity: 0.14 });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(size, 48, 32), mat);
+  const atmo = new THREE.Mesh(new THREE.SphereGeometry(size * 1.14, 48, 32), atmoMat(album.color));
+  const hit = new THREE.Mesh(new THREE.SphereGeometry(size * 1.9, 12, 8), new THREE.MeshBasicMaterial({ visible: false }));
+  hit.userData.kind = 'planet'; hit.userData.index = i;
+  group.add(body, atmo, hit);
+  scene.add(group);
+  planetTexture(album).then((tex) => { mat.map = tex; mat.emissiveMap = tex; mat.needsUpdate = true; });
+
+  const radius = 5.6 + i * 2.1;
+  const orbit = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(Array.from({ length: 160 }, (_, k) => {
+      const a = k / 160 * Math.PI * 2; return new THREE.Vector3(Math.sin(a) * radius, 0, Math.cos(a) * radius);
+    })),
+    new THREE.LineBasicMaterial({ color: album.color, transparent: true, opacity: 0.13, depthWrite: false }));
+  scene.add(orbit);
+
+  const label = document.createElement('button');
+  label.type = 'button'; label.className = 'label';
+  label.textContent = `${album.emoji} ${album.title}`;
+  label.addEventListener('click', () => openAlbum(i));
+  document.getElementById('labels').appendChild(label);
+
+  return { album, group, body, atmo, hit, label, size, radius, angle: i / ALBUMS.length * Math.PI * 2 + 0.6, speed: 0.11 / (1 + i * 0.25), frozen: false };
+});
+const idleTargets = [...planets.map((p) => p.hit), heart.userData.hit, coreHit];
+
+/* ---------- анимации ---------- */
+const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const easeOutBack = (t) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const clamp01 = (v) => Math.min(1, Math.max(0, v));
+const tweens = [];
+function tween(dur, fn) {
+  return new Promise((res) => tweens.push({ t: 0, dur: reduced ? Math.min(dur, 0.3) : dur, fn, res }));
+}
+function stepTweens(dt) {
+  for (let i = tweens.length - 1; i >= 0; i--) {
+    const tw = tweens[i]; tw.t += dt;
+    const k = Math.min(1, tw.t / tw.dur);
+    tw.fn(ease(k), k);
+    if (k >= 1) { tweens.splice(i, 1); tw.res(); }
+  }
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const farFactor = () => camera.aspect < 0.8 ? 1.7 : camera.aspect < 1.2 ? 1.3 : 1;
+
+function homeView() {
+  const f = farFactor();
+  return { pos: new THREE.Vector3(0, 8 * f, 22 * f), target: new THREE.Vector3(0, 2.8, 0) };
+}
+async function flyCamera(toPos, toTarget, dur) {
+  const fromPos = camera.position.clone(), fromTarget = controls.target.clone();
+  const lift = fromPos.distanceTo(toPos) * 0.12;
+  await tween(dur, (k, raw) => {
+    camera.position.lerpVectors(fromPos, toPos, k);
+    camera.position.y += Math.sin(raw * Math.PI) * lift;
+    controls.target.lerpVectors(fromTarget, toTarget, k);
+    camera.lookAt(controls.target);
+  });
+}
+
+/* ---------- 3D-карусель фото ---------- */
+const polaroidCache = new Map();
+async function polaroid(album, k) {
+  const key = album.title + k;
+  if (polaroidCache.has(key)) return polaroidCache.get(key);
+  await fontsReady;
+  const im = await loadImg(photoSrc(album, k));
+  const W = 512, H = 700;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#fffcf7'; g.fillRect(0, 0, W, H);
+  if (im) drawCover(g, im, 22, 22, W - 44, 520);
+  g.fillStyle = '#4a352f'; g.font = '700 40px Caveat, cursive'; g.textAlign = 'center'; g.textBaseline = 'top';
+  const words = album.photos[k].wish.split(' '); const lines = []; let line = '';
+  for (const w of words) { const t = line ? line + ' ' + w : w; if (g.measureText(t).width > W - 50 && line) { lines.push(line); line = w; } else line = t; }
+  if (line) lines.push(line);
+  lines.slice(0, 3).forEach((l, i) => g.fillText(i === 2 && lines.length > 3 ? l + '…' : l, W / 2, 556 + i * 42));
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  polaroidCache.set(key, tex);
+  return tex;
+}
+
+const carousel = { group: null, cards: [], rot: 0, vel: 0, camAngle: 0, step: 1, ready: false, dragging: false };
+const cardGeo = new THREE.PlaneGeometry(1.3, 1.3 * 700 / 512);
+
+function buildCarousel(center, camAngle, R, texes) {
+  const g = new THREE.Group();
+  g.position.copy(center);
+  cardScene.add(g);
+  const n = texes.length;
+  carousel.group = g; carousel.cards = []; carousel.step = Math.PI * 2 / n;
+  carousel.rot = camAngle; carousel.camAngle = camAngle; carousel.vel = 0; carousel.ready = false;
+  texes.forEach((tex, k) => {
+    const m = new THREE.Mesh(cardGeo, new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, depthWrite: true }));
+    const a = k * carousel.step;
+    m.userData = { k, a, from: new THREE.Vector3().randomDirection().multiplyScalar(0.3), to: new THREE.Vector3(Math.sin(a) * R, 0.15 * Math.sin(a * 2), Math.cos(a) * R) };
+    m.position.copy(m.userData.from); m.scale.setScalar(0.02);
+    g.add(m); carousel.cards.push(m);
+  });
+  g.rotation.y = carousel.rot;
+}
+function animateCards(out) {
+  const n = carousel.cards.length, per = 1.0, gap = 0.07, dur = per + gap * n;
+  return tween(dur, (_, raw) => {
+    carousel.cards.forEach((m, k) => {
+      const order = out ? n - 1 - k : k;
+      let t = clamp01((raw * dur - order * gap) / per);
+      if (out) t = 1 - t;
+      const e = out ? ease(t) : easeOutBack(t);
+      const { from, to, a } = m.userData;
+      m.position.lerpVectors(from, to, e);
+      m.position.y += Math.sin(t * Math.PI) * 0.9;
+      m.scale.setScalar(0.02 + 0.98 * Math.max(0, e));
+      m.rotation.set(0, a + (1 - t) * Math.PI * 3, (1 - t) * 0.6);
+    });
+  });
+}
+function updateCarousel(dt) {
+  if (!carousel.group) return;
+  const c = carousel;
+  if (c.ready && !c.dragging) {
+    c.rot += c.vel; c.vel *= 0.92;
+    if (Math.abs(c.vel) < 0.002) {
+      const k = Math.round((c.camAngle - c.rot) / c.step);
+      c.rot += (c.camAngle - k * c.step - c.rot) * 0.1;
+    }
+  }
+  c.group.rotation.y = c.rot;
+  if (!c.ready) return;
+  c.cards.forEach((m) => {
+    const facing = Math.cos(m.userData.a + c.rot - c.camAngle);
+    m.material.opacity = 0.18 + 0.82 * clamp01((facing + 0.3) / 1.3);
+    m.scale.setScalar(1 + 0.18 * Math.pow(clamp01(facing), 12));
+    m.position.y = m.userData.to.y + Math.sin(time * 1.3 + m.userData.k) * 0.06;
+    m.rotation.set(0, m.userData.a, 0);
+  });
+}
+function frontCard() {
+  const c = carousel, n = c.cards.length;
+  return ((Math.round((c.camAngle - c.rot) / c.step) % n) + n) % n;
+}
+function spinCarousel(dir) { carousel.vel = -dir * carousel.step * 0.08; }
+
+/* ---------- состояние ---------- */
+let state = 'intro';
+let current = -1;
+let savedView = null;
+let gridOpen = false;
+
+async function intro() {
+  const home = homeView();
+  camera.position.set(0, 34, 62);
+  controls.target.copy(home.target);
+  camera.lookAt(home.target);
+  const u = heart.material.uniforms.uForm;
+  tween(3.4, (k) => { u.value = k; });
+  await flyCamera(home.pos, home.target, 3.6);
+  controls.enabled = true;
+  state = 'idle';
+  document.body.classList.remove('intro');
+}
+
+async function openAlbum(i) {
+  if (state !== 'idle') return;
+  state = 'flying'; current = i;
+  const p = planets[i], album = ALBUMS[i];
+  p.frozen = true;
+  controls.enabled = false;
+  document.body.classList.add('focus');
+  savedView = { pos: camera.position.clone(), target: controls.target.clone() };
+  const texPromise = Promise.all(album.photos.map((_, k) => polaroid(album, k)));
+  const C = p.group.position.clone();
+  const dir = camera.position.clone().sub(C).setY(0).normalize();
+  const n = album.photos.length;
+  const R = Math.max(2.3, n * 1.55 / (2 * Math.PI));
+  const f = camera.aspect < 0.8 ? 1.25 : 1;
+  const camPos = C.clone().addScaledVector(dir, (R + 4.0) * f).add(new THREE.Vector3(0, 0.9 * f, 0));
+  await flyCamera(camPos, C.clone().add(new THREE.Vector3(0, 0.1, 0)), 1.6);
+  const texes = await texPromise;
+  // планета сжимается и выпускает фото
+  const u = p.atmo.material.uniforms.uBoost;
+  tween(0.8, (k) => { p.body.scale.setScalar(1 - 0.62 * k); p.atmo.scale.setScalar(1 - 0.4 * k); u.value = 0.9 + k * 2.6; });
+  burst(C, 90, 3);
+  buildCarousel(C, Math.atan2(dir.x, dir.z), R, texes);
+  document.getElementById('a-title').textContent = `${album.emoji} ${album.title}`;
+  document.body.classList.add('album');
+  await animateCards(false);
+  carousel.ready = true;
+  state = 'album';
+  document.getElementById('a-back').focus({ preventScroll: true });
+}
+
+async function closeAlbum() {
+  if (state !== 'album') return;
+  state = 'flying';
+  if (gridOpen) await hideGallery();
+  const p = planets[current];
+  document.body.classList.remove('album');
+  carousel.ready = false;
+  const front = frontCard();
+  carousel.rot = carousel.camAngle - front * carousel.step;
+  await animateCards(true);
+  burst(p.group.position, 60, 2);
+  carousel.cards.forEach((m) => m.material.dispose());
+  cardScene.remove(carousel.group);
+  carousel.group = null; carousel.cards = [];
+  const u = p.atmo.material.uniforms.uBoost;
+  tween(0.7, (k) => { p.body.scale.setScalar(0.38 + 0.62 * k); p.atmo.scale.setScalar(0.6 + 0.4 * k); u.value = 3.5 - k * 2.6; });
+  await flyCamera(savedView.pos, savedView.target, 1.5);
+  p.frozen = false;
+  document.body.classList.remove('focus');
+  controls.enabled = true;
+  state = 'idle';
+  current = -1;
+}
+document.getElementById('a-back').addEventListener('click', closeAlbum);
+document.getElementById('a-grid').addEventListener('click', () => { if (state === 'album' && !gridOpen) showGallery(); });
+
+/* ---------- галерея сеткой ---------- */
+const gallery = document.getElementById('gallery');
+const grid = document.getElementById('g-grid');
+function cardFrom(card) {
+  const r = card.getBoundingClientRect();
+  const dx = innerWidth / 2 - (r.left + r.width / 2), dy = innerHeight / 2 - (r.top + r.height / 2);
+  return `translate(${dx}px,${dy}px) scale(.05) rotate(${(Math.random() - 0.5) * 200}deg)`;
+}
+function showGallery() {
+  const album = ALBUMS[current];
+  gridOpen = true;
+  document.body.classList.add('grid');
+  document.getElementById('g-title').textContent = `${album.emoji} ${album.title}`;
+  document.getElementById('g-sub').textContent = `${album.photos.length} фото · нажми на любое, чтобы открыть`;
+  grid.innerHTML = '';
+  grid.scrollTop = 0;
+  album.photos.forEach((ph, k) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'card';
+    b.style.setProperty('--r', `${((k * 37) % 9) - 4}deg`);
+    b.innerHTML = '<img alt="" loading="lazy"><p class="hand"></p>';
+    b.querySelector('img').src = photoSrc(album, k);
+    b.querySelector('img').alt = ph.wish;
+    b.querySelector('p').textContent = ph.wish;
+    b.addEventListener('click', () => openLightbox(k));
+    grid.appendChild(b);
+  });
+  gallery.hidden = false;
+  const cards = [...grid.children];
+  cards.forEach((c) => { c.style.transition = 'none'; c.style.opacity = '0'; c.style.transform = cardFrom(c); });
+  void grid.offsetWidth;
+  requestAnimationFrame(() => {
+    gallery.classList.add('show');
+    cards.forEach((c, k) => {
+      const d = reduced ? 0 : k * 60;
+      c.style.transition = `transform .9s cubic-bezier(.2,.85,.25,1) ${d}ms, opacity .35s ${d}ms`;
+      c.style.opacity = '1';
+      c.style.transform = 'rotate(var(--r))';
+    });
+    setTimeout(() => cards.forEach((c) => { c.style.transition = ''; c.style.transform = ''; }), 950 + cards.length * 60);
+  });
+  document.getElementById('g-back').focus({ preventScroll: true });
+}
+async function hideGallery() {
+  const cards = [...grid.children];
+  cards.forEach((c, k) => {
+    const d = reduced ? 0 : (cards.length - k) * 30;
+    c.style.transition = `transform .55s cubic-bezier(.6,0,.8,.4) ${d}ms, opacity .35s ${d + 200}ms`;
+    c.style.transform = cardFrom(c);
+    c.style.opacity = '0';
+  });
+  gallery.classList.remove('show');
+  document.body.classList.remove('grid');
+  await sleep(reduced ? 100 : 600 + cards.length * 30);
+  gallery.hidden = true;
+  gridOpen = false;
+  document.getElementById('a-grid').focus({ preventScroll: true });
+}
+document.getElementById('g-back').addEventListener('click', hideGallery);
+
+/* ---------- просмотр фото ---------- */
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+let lbIndex = 0;
+function renderLightbox(dir = 0) {
+  const album = ALBUMS[current];
+  const ph = album.photos[lbIndex];
+  lbImg.style.transition = 'none';
+  lbImg.style.opacity = '0';
+  lbImg.style.transform = `translateX(${dir * 40}px) scale(.96)`;
+  lbImg.src = photoSrc(album, lbIndex);
+  lbImg.alt = ph.wish;
+  document.getElementById('lb-wish').textContent = ph.wish;
+  document.getElementById('lb-count').textContent = `${lbIndex + 1} / ${album.photos.length}`;
+  void lbImg.offsetWidth;
+  lbImg.style.transition = '';
+  lbImg.style.opacity = '1';
+  lbImg.style.transform = 'none';
+}
+function openLightbox(k) {
+  lbIndex = k;
+  lb.hidden = false;
+  renderLightbox();
+  requestAnimationFrame(() => lb.classList.add('show'));
+  document.getElementById('lb-close').focus({ preventScroll: true });
+}
+async function closeLightbox() {
+  lb.classList.remove('show');
+  await sleep(300);
+  lb.hidden = true;
+  if (gridOpen) grid.children[lbIndex]?.focus({ preventScroll: true });
+  else if (carousel.group) { carousel.rot = carousel.camAngle - lbIndex * carousel.step; carousel.vel = 0; }
+}
+function stepLightbox(d) {
+  const n = ALBUMS[current].photos.length;
+  lbIndex = (lbIndex + d + n) % n;
+  renderLightbox(d);
+}
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', () => stepLightbox(-1));
+document.getElementById('lb-next').addEventListener('click', () => stepLightbox(1));
+lb.addEventListener('click', (e) => { if (e.target === lb) closeLightbox(); });
+let swipeX = null;
+lb.addEventListener('pointerdown', (e) => { swipeX = e.clientX; });
+lb.addEventListener('pointerup', (e) => {
+  if (swipeX === null) return;
+  const dx = e.clientX - swipeX; swipeX = null;
+  if (Math.abs(dx) > 50) stepLightbox(dx < 0 ? 1 : -1);
+});
+
+addEventListener('keydown', (e) => {
+  if (!lb.hidden) {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') stepLightbox(1);
+    else if (e.key === 'ArrowLeft') stepLightbox(-1);
+  } else if (gridOpen) {
+    if (e.key === 'Escape') hideGallery();
+  } else if (state === 'album') {
+    if (e.key === 'Escape') closeAlbum();
+    else if (e.key === 'ArrowRight') spinCarousel(1);
+    else if (e.key === 'ArrowLeft') spinCarousel(-1);
+    else if (e.key === 'Enter' && document.activeElement === document.body) openLightbox(frontCard());
+  }
+});
+
+/* ---------- указатель ---------- */
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+const plane = new THREE.Plane();
+const tmpV = new THREE.Vector3();
+let downAt = null, hovered = null, lastX = 0, pointerSeen = 0;
+function setRay(e) {
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+}
+function pickIdle() {
+  const hit = ray.intersectObjects(idleTargets, false)[0];
+  return hit ? hit.object.userData : null;
+}
+canvas.addEventListener('pointerdown', (e) => {
+  downAt = { x: e.clientX, y: e.clientY };
+  lastX = e.clientX;
+  if (state === 'album') { carousel.dragging = true; carousel.vel = 0; canvas.setPointerCapture(e.pointerId); }
+});
+canvas.addEventListener('pointermove', (e) => {
+  setRay(e);
+  pointerSeen = 1;
+  if (state === 'album' && carousel.dragging) {
+    const dx = e.clientX - lastX; lastX = e.clientX;
+    const d = dx * 0.006;
+    carousel.rot += d; carousel.vel = d;
+    return;
+  }
+  if (state !== 'idle') return;
+  // шлейф за курсором
+  if (Math.random() < 0.9) emit(tmpV.copy(ray.ray.origin).addScaledVector(ray.ray.direction, 9), 0.25, 0.15);
+  // частицы сердца разбегаются от курсора
+  const hp = heart.getWorldPosition(new THREE.Vector3());
+  plane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()).negate(), hp);
+  if (ray.ray.intersectPlane(plane, tmpV)) heart.material.uniforms.uMouse.value.copy(heart.worldToLocal(tmpV.clone()));
+  if (e.pointerType === 'mouse') {
+    const hit = pickIdle();
+    const key = hit ? hit.kind + (hit.index ?? '') : null;
+    if (key !== hovered) {
+      planets.forEach((p) => p.label.classList.remove('hot'));
+      if (hit && hit.kind === 'planet') planets[hit.index].label.classList.add('hot');
+      canvas.style.cursor = hit ? 'pointer' : '';
+      hovered = key;
+    }
+  }
+});
+canvas.addEventListener('pointerleave', () => { pointerSeen = 0; });
+canvas.addEventListener('pointerup', (e) => {
+  if (!downAt) return;
+  const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+  downAt = null;
+  if (state === 'album') {
+    carousel.dragging = false;
+    if (moved < 8) {
+      setRay(e);
+      const hit = ray.intersectObjects(carousel.cards, false)[0];
+      if (hit) openLightbox(hit.object.userData.k);
+    }
+    return;
+  }
+  if (state !== 'idle' || moved > 8) return;
+  setRay(e);
+  const hit = pickIdle();
+  if (!hit) return;
+  if (hit.kind === 'planet') openAlbum(hit.index);
+  else if (hit.kind === 'heart') morphHeart();
+  else if (hit.kind === 'core') supernova();
+});
+canvas.addEventListener('wheel', (e) => {
+  if (state !== 'album') return;
+  e.preventDefault();
+  carousel.vel = -Math.sign(e.deltaY || e.deltaX) * carousel.step * 0.08;
+}, { passive: false });
+
+document.getElementById('fs').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen?.();
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+});
+if (!document.documentElement.requestFullscreen) document.getElementById('fs').hidden = true;
+
+/* ---------- цикл ---------- */
+const clock = new THREE.Clock();
+const tmp = new THREE.Vector3();
+let time = 0;
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  time += dt;
+  stepTweens(dt);
+
+  galaxy.material.uniforms.uTime.value = time;
+  heart.material.uniforms.uTime.value = time;
+  const hu = heart.material.uniforms;
+  const showsText = (morphing ? hu.uTo.value.x : hu.uFrom.value.x) < 0.5;
+  textness += ((showsText ? 1 : 0) - textness) * Math.min(1, dt * 2);
+  // сердце и надписи всегда развёрнуты к зрителю
+  const camAz = Math.atan2(camera.position.x - heart.position.x, camera.position.z - heart.position.z);
+  heart.rotation.y = camAz + Math.sin(time * 0.35) * 0.45 * (1 - textness);
+  hu.uMouseOn.value += ((state === 'idle' ? pointerSeen : 0) - hu.uMouseOn.value) * Math.min(1, dt * 4);
+  core.material.rotation = time * 0.05;
+  if (!supernovaBusy) core.scale.setScalar(3.6 + Math.sin(time * 1.9) * 0.2);
+  stars.rotation.y = time * 0.004;
+
+  for (const p of planets) {
+    if (!p.frozen) p.angle += dt * p.speed * (reduced ? 0.3 : 1);
+    p.group.position.set(Math.sin(p.angle) * p.radius, Math.sin(p.angle * 2 + p.radius) * 0.35, Math.cos(p.angle) * p.radius);
+    p.body.rotation.y += dt * (p.frozen ? 0.6 : 0.18);
+    tmp.copy(p.group.position); tmp.y += p.size * 1.55;
+    tmp.project(camera);
+    const visible = tmp.z < 1 && Math.abs(tmp.x) < 1.1 && Math.abs(tmp.y) < 1.1;
+    p.label.style.display = visible ? '' : 'none';
+    if (visible) p.label.style.transform = `translate(-50%,-100%) translate(${(tmp.x * 0.5 + 0.5) * innerWidth}px,${(-tmp.y * 0.5 + 0.5) * innerHeight}px)`;
+  }
+
+  updateSparks(dt);
+  updateComets(dt);
+  updateCarousel(dt);
+
+  if (state === 'idle') controls.update();
+  composer.render();
+  if (carousel.group) {
+    renderer.autoClear = false;
+    renderer.clearDepth();
+    renderer.render(cardScene, camera);
+    renderer.autoClear = true;
+  }
+  requestAnimationFrame(frame);
+}
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+intro();
+frame();
+</script>
+</body>
+</html>
